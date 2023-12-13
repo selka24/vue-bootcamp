@@ -1,3 +1,3 @@
 <template>
-  <RouterView />
+  <div>2 begin</div>
 </template>
