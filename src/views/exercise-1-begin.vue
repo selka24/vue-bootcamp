@@ -1,3 +1,4 @@
-<template>
-  <div>1 begin</div>
-</template>
+<script setup>
+import { ref } from "vue";
+const msg = ref("Hello Bootcampers!");
+</script>
