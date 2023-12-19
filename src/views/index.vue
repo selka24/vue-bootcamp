@@ -3,6 +3,12 @@
     <div>
       <h1 class="text-6xl text-center">Vue.js Certificate Level 1 Bootcamp</h1>
       <UButtonGroup class="mt-10 [&>*:nth-of-type(even)]:opacity-70 join">
+        <RouterLink class="btn btn-primary join-item" to="/exercise-1-begin">
+          Exercise 1: Start
+        </RouterLink>
+        <RouterLink class="btn btn-primary join-item" to="/exercise-1-end">
+          Exercise 1: End
+        </RouterLink>
         <RouterLink class="btn btn-primary join-item" to="/exercise-2-begin">
           Exercise 2: Start
         </RouterLink>
