@@ -1,5 +1,11 @@
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
+
+const emit = defineEmits({
+  "update:username": (payload) => {
+    return payload !== "";
+  },
+});
 
 const props = defineProps({
   avatar: {
@@ -31,6 +37,17 @@ const props = defineProps({
   },
 });
 
+function updateUsername(username) {
+  emit(
+    "update:username",
+    username.replace(/^@/, "").replace(/[^a-zA-Z0-9]/g, ""),
+  );
+}
+
+const usernameWithAt = computed(() => {
+  return `@${props.username}`;
+});
+
 const skillsInOrder = computed(() => {
   return [...props.skills].sort((a, b) => a.localeCompare(b));
 });
@@ -45,7 +62,13 @@ const skillsInOrder = computed(() => {
     </div>
     <div class="body">
       <h3 class="name">{{ name.first }} {{ name.last }}</h3>
-      <h4 class="username">@{{ username }}</h4>
+      <h4 class="username">
+        <input
+          type="text"
+          :value="usernameWithAt"
+          @input="updateUsername($event.target.value)"
+        />
+      </h4>
       <p class="bio">{{ bio }}</p>
       <div class="actions">
         <button class="message-btn">Message</button>
@@ -65,7 +88,7 @@ const skillsInOrder = computed(() => {
 www.florin-pop.com/blog/2019/04/profile-card-design/
 */
 .profile-card {
-  @apply bg-white dark:bg-base-200 rounded-lg overflow-hidden shadow-md max-w-xs h-[420px] flex flex-col justify-between;
+  @apply bg-white dark:bg-base-200 rounded-lg overflow-hidden shadow-md max-w-xs;
 }
 
 .header {
@@ -94,6 +117,10 @@ www.florin-pop.com/blog/2019/04/profile-card-design/
 
 .username {
   @apply text-gray-500 text-sm;
+}
+
+.username input {
+  @apply bg-transparent w-auto inline-block min-w-0 text-center;
 }
 
 .bio {
