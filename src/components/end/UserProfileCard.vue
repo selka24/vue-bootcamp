@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 const props = defineProps({
   avatar: {
@@ -36,13 +36,24 @@ defineEmits(["message", "follow"]);
 const skillsInOrder = computed(() => {
   return [...props.skills].sort((a, b) => a.localeCompare(b));
 });
+
+const imageLoaded = ref(false);
 </script>
 <template>
   <div class="profile-card">
     <div class="header">
       <span v-if="pro" class="badge">PRO</span>
       <div class="avatar-wrapper">
-        <img :src="avatar" :alt="`${name.first} ${name.last}`" class="avatar" />
+        <img
+          :src="avatar"
+          :alt="`${name.first} ${name.last}`"
+          class="avatar"
+          @load="imageLoaded = true"
+          :class="{
+            'opacity-0': !imageLoaded,
+            'opacity-100': imageLoaded,
+          }"
+        />
       </div>
     </div>
     <div class="body">
@@ -84,6 +95,7 @@ www.florin-pop.com/blog/2019/04/profile-card-design/
 
 .avatar {
   @apply rounded-full border-4 border-white h-24 w-24 object-cover;
+  transition: opacity 0.1s ease;
 }
 
 .body {
