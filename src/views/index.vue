@@ -2,7 +2,8 @@
   <div class="h-[100vh] flex justify-center items-center">
     <div>
       <h1 class="text-6xl text-center">Vue.js Certificate Level 1 Bootcamp</h1>
-      <div class="mt-10 [&>*:nth-of-type(even)]:opacity-70 join">
+      <h2 class="mt-8 text-4xl text-center">Day 1</h2>
+      <div class="mt-3 [&>*:nth-of-type(even)]:opacity-70 join ">
         <RouterLink class="btn btn-primary join-item" to="/exercise-1-begin">
           Exercise 1: Start
         </RouterLink>
@@ -38,6 +39,45 @@
         </RouterLink>
         <RouterLink class="btn btn-primary join-item" to="/exercise-6-end">
           Exercise 6: End
+        </RouterLink>
+      </div>
+      <h2 class="mt-8 text-4xl text-center">Day 2</h2>
+      <div class="mt-3 [&>*:nth-of-type(even)]:opacity-70 join">
+        <RouterLink class="btn btn-primary join-item" to="/exercise-7-begin">
+          Exercise 7: Start
+        </RouterLink>
+        <RouterLink class="btn btn-primary join-item" to="/exercise-7-end">
+          Exercise 7: End
+        </RouterLink>
+        <RouterLink class="btn btn-primary join-item" to="/exercise-8-begin">
+          Exercise 8: Start
+        </RouterLink>
+        <RouterLink class="btn btn-primary join-item" to="/exercise-8-end">
+          Exercise 8: End
+        </RouterLink>
+        <RouterLink class="btn btn-primary join-item" to="/exercise-9-begin">
+          Exercise 9: Start
+        </RouterLink>
+        <RouterLink class="btn btn-primary join-item" to="/exercise-9-end">
+          Exercise 9: End
+        </RouterLink>
+        <RouterLink class="btn btn-primary join-item" to="/exercise-10-begin">
+          Exercise 10: Start
+        </RouterLink>
+        <RouterLink class="btn btn-primary join-item" to="/exercise-10-end">
+          Exercise 10: End
+        </RouterLink>
+        <RouterLink class="btn btn-primary join-item" to="/exercise-11-begin">
+          Exercise 11: Start
+        </RouterLink>
+        <RouterLink class="btn btn-primary join-item" to="/exercise-11-end">
+          Exercise 11: End
+        </RouterLink>
+        <RouterLink class="btn btn-primary join-item" to="/exercise-12-begin">
+          Exercise 12: Start
+        </RouterLink>
+        <RouterLink class="btn btn-primary join-item" to="/exercise-12-end">
+          Exercise 12: End
         </RouterLink>
       </div>
     </div>
