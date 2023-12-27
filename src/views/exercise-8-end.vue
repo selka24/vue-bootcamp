@@ -14,10 +14,16 @@ const user = ref({
   skills: ["JavaScript", "Vue", "React", "Node"],
   pro: true,
 });
+
+const alert = (msg) => window.alert(msg);
 </script>
 <template>
   <div class="exercise-8">
-    <UserProfileCard v-bind="user" class="mr-5" />
+    <UserProfileCard
+      v-bind="user"
+      class="mr-5"
+      @message="alert(`You messaged ${user.name.first} ${user.name.last}`)"
+    />
     <UserProfileCardEdit v-bind="user" @saved="user = $event" />
   </div>
 </template>

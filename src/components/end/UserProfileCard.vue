@@ -31,6 +31,8 @@ const props = defineProps({
   },
 });
 
+defineEmits(["message", "follow"]);
+
 const skillsInOrder = computed(() => {
   return [...props.skills].sort((a, b) => a.localeCompare(b));
 });
@@ -48,8 +50,8 @@ const skillsInOrder = computed(() => {
       <h4 class="username">@{{ username }}</h4>
       <p class="bio">{{ bio }}</p>
       <div class="actions">
-        <button class="message-btn">Message</button>
-        <button class="follow-btn">Follow</button>
+        <button class="message-btn" @click="$emit('message')">Message</button>
+        <button class="follow-btn" @click="$emit('follow')">Follow</button>
       </div>
     </div>
     <div class="footer">
