@@ -1,11 +1,13 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
+import { createApp } from "vue";
+import App from "./App.vue";
+import router from "./router";
 
-import './assets/main.css'
+import { Icon } from "@iconify/vue";
 
-const app = createApp(App)
+import "./assets/main.css";
 
-app.use(router)
-
-app.mount('#app')
+// prettier-ignore
+createApp(App)
+.use(router)
+.component('Icon', Icon)
+.mount('#app')
