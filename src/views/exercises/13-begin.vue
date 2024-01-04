@@ -22,6 +22,6 @@ const numOfSlides = 10;
   @apply object-cover w-full transition-all duration-700 block;
 }
 .slides-wrapper {
-  @apply flex overflow-hidden rounded max-w-[850px];
+  @apply flex overflow-hidden rounded max-w-[600px];
 }
 </style>

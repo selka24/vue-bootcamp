@@ -16,14 +16,10 @@ const user = ref({
 });
 </script>
 <template>
-  <div class="exercise-8">
+  <div class="viewport-center">
     <UserProfileCard v-bind="user" class="mr-5" />
     <UserProfileCardEdit v-bind="user" />
   </div>
 </template>
 
-<style scoped>
-.exercise-8 {
-  @apply flex items-center justify-center h-screen p-10;
-}
-</style>
+<style scoped></style>

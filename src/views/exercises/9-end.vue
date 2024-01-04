@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import UserProfileCard from "@/components/end/UserProfileCard.vue";
 import UserProfileCardEdit from "@/components/end/UserProfileCardEdit.vue";
+import CardShortcuts from "@/components/internal/CardShortcuts.vue";
 
 const user = ref({
   avatar: "https://i.pravatar.cc/150?img=6",
@@ -37,47 +38,25 @@ onUnmounted(() => {
 });
 </script>
 <template>
-  <div class="exercise-8">
+  <div class="viewport-center">
     <div>
-      <Transition>
-        <UserProfileCardEdit
-          v-if="editing"
-          v-bind="user"
-          @saved="user = $event"
-        />
-        <UserProfileCard v-else v-bind="user" />
-      </Transition>
+      <UserProfileCardEdit
+        v-if="editing"
+        v-bind="user"
+        @saved="user = $event"
+      />
+      <UserProfileCard v-else v-bind="user" />
+
       <button @click="editing = !editing" class="edit-button">
         {{ editing ? "Cancel" : "Edit" }}
       </button>
+      <CardShortcuts />
     </div>
   </div>
 </template>
 
 <style scoped>
-.exercise-8 {
-  @apply flex items-center justify-center h-screen p-10;
-}
 .edit-button {
   @apply bg-gray-200 dark:bg-gray-700 dark:text-white px-2 py-1 rounded block mt-2 w-full max-w-xs;
-}
-
-.v-enter-active,
-.v-leave-active {
-  transition: all 0.25s ease;
-  transform-style: preserve-3d;
-}
-
-.v-enter-active {
-  transition: all 0.25s ease 0.25s;
-  transform-style: preserve-3d;
-}
-
-.v-enter-from,
-.v-leave-to {
-  /* opacity: 0; */
-  transform: rotateY(90deg);
-  backface-visibility: hidden;
-  position: absolute;
 }
 </style>

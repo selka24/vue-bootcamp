@@ -1,20 +1,16 @@
 <script setup>
-import { ref, reactive, nextTick } from "vue";
+import { ref, watch } from "vue";
 
-let users = reactive([]);
+let users = ref([]);
 const page = ref(1);
 
 async function fetchUsers() {
   const res = await fetch(`/api/users/${page.value}.json`);
-  users = await res.json();
+  users.value = await res.json();
 }
 
 fetchUsers();
-
-function updatePage(pageNumber) {
-  page.value = pageNumber;
-  fetchUsers();
-}
+watch(page, fetchUsers);
 
 function incrementVote(user) {
   user.votes++;
@@ -25,7 +21,7 @@ function decrementVote(user) {
 }
 </script>
 <template>
-  <div class="exercise-2">
+  <div class="viewport-center">
     <div>
       <ul class="user-wrapper">
         <li
@@ -46,7 +42,7 @@ function decrementVote(user) {
       <ul class="pagination">
         <li
           v-for="n in 3"
-          @click="updatePage(n)"
+          @click="page = n"
           :key="n"
           :class="{
             active: n === page,
@@ -60,9 +56,6 @@ function decrementVote(user) {
 </template>
 
 <style scoped>
-.exercise-2 {
-  @apply flex items-center justify-center h-screen p-10;
-}
 .user-wrapper {
   @apply flex flex-wrap gap-10 justify-center;
 }

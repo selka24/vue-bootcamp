@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import UserProfileCard from "@/components/end/UserProfileCard.vue";
 import UserProfileCardEdit from "@/components/end/UserProfileCardEdit.vue";
+import CardShortcuts from "@/components/internal/CardShortcuts.vue";
 
 const user = ref({
   avatar: "https://i.pravatar.cc/150?img=6",
@@ -16,28 +17,9 @@ const user = ref({
 });
 
 const editing = ref(false);
-
-function keyboardShortcuts(e) {
-  if (e.key === "Escape") {
-    e.preventDefault();
-    editing.value = false;
-  }
-  if (e.key === "e" && e.metaKey) {
-    e.preventDefault();
-    editing.value = true;
-  }
-}
-
-onMounted(() => {
-  window.addEventListener("keydown", keyboardShortcuts);
-});
-
-onUnmounted(() => {
-  window.removeEventListener("keydown", keyboardShortcuts);
-});
 </script>
 <template>
-  <div class="exercise-8">
+  <div class="viewport-center">
     <div>
       <UserProfileCardEdit
         v-if="editing"
@@ -49,14 +31,13 @@ onUnmounted(() => {
       <button @click="editing = !editing" class="edit-button">
         {{ editing ? "Cancel" : "Edit" }}
       </button>
+
+      <CardShortcuts />
     </div>
   </div>
 </template>
 
 <style scoped>
-.exercise-8 {
-  @apply flex items-center justify-center h-screen p-10;
-}
 .edit-button {
   @apply bg-gray-200 dark:bg-gray-700 dark:text-white px-2 py-1 rounded block mt-2 w-full max-w-xs;
 }

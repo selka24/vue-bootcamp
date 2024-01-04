@@ -37,7 +37,7 @@ onUnmounted(() => {
 });
 </script>
 <template>
-  <div class="exercise-8">
+  <div class="viewport-center">
     <div>
       <UserProfileCardEdit
         v-if="editing"
@@ -54,9 +54,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.exercise-8 {
-  @apply flex items-center justify-center h-screen p-10;
-}
 .edit-button {
   @apply bg-gray-200 dark:bg-gray-700 dark:text-white px-2 py-1 rounded block mt-2 w-full max-w-xs;
 }

@@ -49,7 +49,7 @@ const emailIsValid = computed(() => {
     form.value.email
       .toLowerCase()
       .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
       )
   );
 });
@@ -82,7 +82,7 @@ function register() {
 </script>
 
 <template>
-  <div class="exercise-6">
+  <div class="page-wrapper">
     <h1>Register</h1>
     <form @submit.prevent="register">
       <label class="form-control">
@@ -214,8 +214,8 @@ function register() {
 </template>
 
 <style scoped>
-.exercise-6 {
-  @apply w-[960px] m-auto mt-5;
+.page-wrapper {
+  @apply w-[960px] m-auto mt-20;
 }
 h1 {
   @apply text-3xl mb-5;

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from "vue";
+import { ref } from "vue";
 
 let users = ref([]);
 const page = ref(1);
@@ -10,7 +10,11 @@ async function fetchUsers() {
 }
 
 fetchUsers();
-watch(page, fetchUsers);
+
+function updatePage(pageNumber) {
+  page.value = pageNumber;
+  fetchUsers();
+}
 
 function incrementVote(user) {
   user.votes++;
@@ -21,7 +25,7 @@ function decrementVote(user) {
 }
 </script>
 <template>
-  <div class="exercise-2">
+  <div class="viewport-center">
     <div>
       <ul class="user-wrapper">
         <li
@@ -42,7 +46,7 @@ function decrementVote(user) {
       <ul class="pagination">
         <li
           v-for="n in 3"
-          @click="page = n"
+          @click="updatePage(n)"
           :key="n"
           :class="{
             active: n === page,
@@ -56,9 +60,6 @@ function decrementVote(user) {
 </template>
 
 <style scoped>
-.exercise-2 {
-  @apply flex items-center justify-center h-screen p-10;
-}
 .user-wrapper {
   @apply flex flex-wrap gap-10 justify-center;
 }

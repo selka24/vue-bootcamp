@@ -30,7 +30,7 @@ function decrementVote(user) {
 }
 </script>
 <template>
-  <div class="exercise-2">
+  <div class="viewport-center">
     <div>
       <div class="leader-board">
         <h2>Leader Board</h2>
@@ -46,10 +46,6 @@ function decrementVote(user) {
       <ul class="user-wrapper">
         <li
           class="user-card"
-          :class="{
-            winning: user.votes === top3Users[0]?.votes,
-            'losing-hard': user.votes === 0,
-          }"
           v-for="(user, index) in users"
           :key="user.id"
           :tabindex="index + 1"
@@ -68,10 +64,6 @@ function decrementVote(user) {
 </template>
 
 <style scoped>
-.exercise-2 {
-  @apply flex items-center justify-center h-screen p-10;
-}
-
 .user-wrapper {
   @apply flex flex-wrap gap-10 justify-center mt-4;
 }
@@ -98,12 +90,5 @@ h2 {
 }
 .votes-pill {
   @apply bg-gray-700 p-2 rounded-full text-white text-sm ml-2 w-8 h-8 inline-block text-center leading-4;
-}
-
-.winning {
-  @apply border-green-600;
-}
-.losing-hard {
-  @apply border-red-600;
 }
 </style>

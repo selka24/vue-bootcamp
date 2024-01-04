@@ -14,13 +14,6 @@ const users = ref([
   { id: '9c110067-2345-4f7f-89cc-b50cd02fd106', votes: 0, name: 'Ashley Fisher', avatar: 'https://i.pravatar.cc/150?img=10' }
 ]);
 
-const top3Users = computed(() => {
-  return [...users.value]
-    .sort((a, b) => b.votes - a.votes)
-    .slice(0, 3)
-    .filter((user) => user.votes > 0);
-});
-
 function incrementVote(user) {
   user.votes++;
 }
@@ -30,17 +23,29 @@ function decrementVote(user) {
 }
 </script>
 <template>
-  <div class="exercise-2">
+  <div class="viewport-center">
     <div>
+      <!-- Here is the markup for the leader board 👇 -->
       <div class="leader-board">
         <h2>Leader Board</h2>
-        <ul v-if="top3Users.length">
-          <li v-for="user in top3Users" :key="user.id">
-            <strong>{{ user.name }} </strong>
-            <span class="votes-pill">{{ user.votes }}</span>
+
+        <ul>
+          <li>
+            <strong>Debra Hunt</strong>
+            <span class="votes-pill">5</span>
+          </li>
+          <li>
+            <strong>Micahel Perkins</strong>
+            <span class="votes-pill">3</span>
+          </li>
+          <li>
+            <strong>Jessica Martin</strong>
+            <span class="votes-pill">1</span>
           </li>
         </ul>
-        <p v-else>No one has any votes yet</p>
+
+        <!-- If no one has any votes show this message -->
+        <!-- <p>No one has any votes yet</p> -->
       </div>
       <h2>Candidates</h2>
       <ul class="user-wrapper">
@@ -64,10 +69,6 @@ function decrementVote(user) {
 </template>
 
 <style scoped>
-.exercise-2 {
-  @apply flex items-center justify-center h-screen p-10;
-}
-
 .user-wrapper {
   @apply flex flex-wrap gap-10 justify-center mt-4;
 }

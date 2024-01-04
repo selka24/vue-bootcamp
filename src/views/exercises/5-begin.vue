@@ -30,7 +30,7 @@ function decrementVote(user) {
 }
 </script>
 <template>
-  <div class="exercise-2">
+  <div class="viewport-center">
     <div>
       <div class="leader-board">
         <h2>Leader Board</h2>
@@ -64,10 +64,6 @@ function decrementVote(user) {
 </template>
 
 <style scoped>
-.exercise-2 {
-  @apply flex items-center justify-center h-screen p-10;
-}
-
 .user-wrapper {
   @apply flex flex-wrap gap-10 justify-center mt-4;
 }

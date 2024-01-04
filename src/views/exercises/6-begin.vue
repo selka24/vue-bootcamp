@@ -1,7 +1,7 @@
 <script setup></script>
 
 <template>
-  <div class="exercise-6">
+  <div class="page-wrapper">
     <h1>Register</h1>
     <form>
       <label class="form-control">
@@ -101,8 +101,8 @@
 </template>
 
 <style scoped>
-.exercise-6 {
-  @apply w-[960px] m-auto mt-5;
+.page-wrapper {
+  @apply w-[960px] m-auto mt-20;
 }
 h1 {
   @apply text-3xl mb-5;

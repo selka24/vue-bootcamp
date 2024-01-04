@@ -1,10 +1,14 @@
+<script setup lang="ts">
+import NavigationDrawer from "@/components/internal/NavigationDrawer.vue";
+</script>
 <template>
-  <RouterView />
+  <NavigationDrawer>
+    <RouterView />
+  </NavigationDrawer>
 </template>
+
 <style>
-input,
-select,
-textarea {
-  outline-offset: 0 !important;
+.viewport-center {
+  @apply flex items-center justify-center h-screen p-4;
 }
 </style>
