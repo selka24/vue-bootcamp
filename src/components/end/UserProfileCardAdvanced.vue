@@ -1,26 +1,81 @@
 <script setup>
-// you must define the props here to make the component display the proper content
+import { computed, ref } from "vue";
+
+const props = defineProps({
+  avatar: {
+    type: String,
+    default: "/placeholder-avatar.jpg",
+  },
+  username: {
+    type: String,
+    required: true,
+  },
+  bio: {
+    type: String,
+    default: "",
+  },
+  name: {
+    type: Object,
+    default: () => ({ first: "John", last: "Doe" }),
+  },
+  skills: {
+    type: Array,
+    default: () => [],
+    validator: (skills) => {
+      return skills.length > 0;
+    },
+  },
+  pro: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+defineEmits(["message", "follow"]);
+
+const skillsInOrder = computed(() => {
+  return [...props.skills].sort((a, b) => a.localeCompare(b));
+});
+
+const imageLoaded = ref(false);
 </script>
 <template>
   <div class="profile-card">
     <div class="header">
       <span v-if="pro" class="badge">PRO</span>
       <div class="avatar-wrapper">
-        <img :src="avatar" :alt="`${name.first} ${name.last}`" class="avatar" />
+        <img
+          :src="avatar"
+          :alt="`${name.first} ${name.last}`"
+          class="avatar"
+          @load="imageLoaded = true"
+          :class="{
+            'opacity-0': !imageLoaded,
+            'opacity-100': imageLoaded,
+          }"
+        />
       </div>
     </div>
     <div class="body">
       <h3 class="name">{{ name.first }} {{ name.last }}</h3>
       <h4 class="username">@{{ username }}</h4>
-      <p class="bio">{{ bio }}</p>
+      <p class="bio">
+        <slot name="bio">
+          {{ bio }}
+        </slot>
+      </p>
       <div class="actions">
-        <button class="message-btn">Message</button>
-        <button class="follow-btn">Follow</button>
+        <button class="message-btn" @click="$emit('message')">Message</button>
+        <button class="follow-btn" @click="$emit('follow')">Follow</button>
       </div>
     </div>
     <div class="footer">
       <ul class="skills">
-        <li v-for="skill in skills" :key="skill">{{ skill }}</li>
+        <li v-for="skill in skillsInOrder" :key="skill">
+          <slot name="skill" :skill="skill">
+            {{ skill }}
+          </slot>
+        </li>
       </ul>
     </div>
   </div>
@@ -31,7 +86,7 @@
 www.florin-pop.com/blog/2019/04/profile-card-design/
 */
 .profile-card {
-  @apply bg-white dark:bg-base-200 rounded-lg overflow-hidden shadow-md max-w-xs;
+  @apply bg-white dark:bg-base-200 rounded-lg overflow-hidden shadow-md max-w-xs h-[420px] flex flex-col justify-between;
 }
 
 .header {
@@ -48,6 +103,7 @@ www.florin-pop.com/blog/2019/04/profile-card-design/
 
 .avatar {
   @apply rounded-full border-4 border-white h-24 w-24 object-cover;
+  transition: opacity 0.1s ease;
 }
 
 .body {
