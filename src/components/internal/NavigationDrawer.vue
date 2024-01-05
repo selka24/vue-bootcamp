@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
 import { computed, onMounted, onUnmounted } from "vue";
-const day1Links = [
-  ["Day 1", "/day-1-welcome"],
+
+const allLinks = [
+  ["Day 1", "/day-1-welcome", true],
   ["Exercise 1 Start", "/exercises/1-begin"],
   ["Exercise 1 End", "/exercises/1-end"],
   ["Exercise 2 Start", "/exercises/2-begin"],
@@ -17,10 +18,7 @@ const day1Links = [
   ["Exercise 5 End", "/exercises/5-end"],
   ["Exercise 6 Start", "/exercises/6-begin"],
   ["Exercise 6 End", "/exercises/6-end"],
-];
-
-const day2Links = [
-  ["Day 2", "/day-2-welcome"],
+  ["Day 2", "/day-2-welcome", true],
   ["Exercise 7 Start", "/exercises/7-begin"],
   ["Exercise 7 End", "/exercises/7-end"],
   ["Exercise 8 Start", "/exercises/8-begin"],
@@ -38,8 +36,6 @@ const day2Links = [
   ["Exercise 13 Start", "/exercises/13-begin"],
   ["Exercise 13 End", "/exercises/13-end"],
 ];
-
-const allLinks = [...day1Links, ...day2Links];
 
 const route = useRoute();
 const router = useRouter();
@@ -110,36 +106,18 @@ const prevLink = computed(() => {
       <ul
         class="min-h-full p-5 pt-20 overflow-auto text-lg menu w-80 bg-base-200 text-base-content"
       >
-        <!-- Day 1 -->
-        <li>
-          <RouterLink to="/">
-            <strong>Day 1</strong>
-          </RouterLink>
-        </li>
         <li
-          v-for="link in day1Links"
+          v-for="link in allLinks"
           :key="link[0]"
           :class="{
             'bg-primary rounded text-white': link[1] === activeLink[1],
           }"
         >
-          <RouterLink :to="link[1]">{{ link[0] }}</RouterLink>
-        </li>
-
-        <!-- Day 2 -->
-        <li>
-          <RouterLink to="/">
-            <strong>Day 2</strong>
+          <RouterLink :to="link[1]">
+            <component :is="link[2] ? 'strong' : 'span'">
+              {{ link[0] }}
+            </component>
           </RouterLink>
-        </li>
-        <li
-          v-for="link in day2Links"
-          :key="link[0]"
-          :class="{
-            'bg-primary rounded text-white': link[1] === activeLink[1],
-          }"
-        >
-          <RouterLink :to="link[1]">{{ link[0] }}</RouterLink>
         </li>
       </ul>
     </div>
