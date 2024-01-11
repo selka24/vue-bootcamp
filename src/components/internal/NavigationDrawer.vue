@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
 import { computed, onMounted, onUnmounted } from "vue";
+import { useUser } from "@/composables/useUser";
+
+const { session, login, logout } = useUser();
 
 const allLinks = [
   ["Day 1", "/day-1-welcome", true],
@@ -35,6 +38,7 @@ const allLinks = [
   ["Exercise 12 Bonus End 🔥", "/exercises/12-zbonus-end"],
   ["Exercise 13 Start", "/exercises/13-begin"],
   ["Exercise 13 End", "/exercises/13-end"],
+  ["Day 3", "/day-3-welcome"],
 ];
 
 const route = useRoute();
@@ -87,9 +91,32 @@ const prevLink = computed(() => {
       {{ activeLink[0] }}
     </h1>
 
-    <label for="my-drawer" class="text-3xl cursor-pointer text-base-content">
-      <Icon icon="ci:hamburger-lg" />
-    </label>
+    <div class="flex items-center gap-3">
+      <button
+        v-if="!session"
+        @click="login()"
+        class="text-sm btn btn-primary btn-xs"
+      >
+        Login with <Icon icon="fa:github"></Icon>
+      </button>
+      <div v-if="session" class="relative flex items-center gap-3 group">
+        <span class="text-sm">{{ session.user.user_metadata.name }}</span>
+        <img
+          class="w-10 h-10 rounded-full"
+          :src="session.user.user_metadata.avatar_url"
+          alt=""
+        />
+        <ul
+          class="absolute right-0 hidden w-56 menu bg-base-200 rounded-box top-full group-hover:block"
+        >
+          <li><a @click.prevent="logout()">Logout</a></li>
+        </ul>
+      </div>
+
+      <label for="my-drawer" class="text-3xl cursor-pointer text-base-content">
+        <Icon icon="ci:hamburger-lg" />
+      </label>
+    </div>
   </header>
 
   <div class="drawer drawer-end">
