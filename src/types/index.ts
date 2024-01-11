@@ -11,3 +11,10 @@ export interface Question {
   content: string;
   active: boolean;
 }
+
+export interface ActiveQuestion {
+  id: number;
+  status: TStatus;
+  question: number;
+  begin_at: Date;
+}

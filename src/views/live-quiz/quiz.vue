@@ -1,30 +1,20 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import QuizQuestion from "@/components/internal/QuizQuestion.vue";
+import { useUser } from "@/composables/useUser";
 import { useSupabase } from "@/composables/useSupabase";
 import QuizTimer from "@/components/internal/QuizTimer.vue";
+import type { Question, ActiveQuestion } from "@/types";
 const supabase = useSupabase();
+const { session } = useUser();
 
-type TStatus =
-  | "NotStarted"
-  | "BeingRead"
-  | "Answering"
-  | "TimesUp"
-  | "ShowingAnswer"
-  | "Finished";
-
-const status = ref<TStatus>("NotStarted");
-
-interface Question {
-  id: number;
-  content: string;
-  active: boolean;
-}
-
-const currentQuestionId = ref(1);
+const submitted = ref(false);
+const activeQuestion = ref<ActiveQuestion>();
 const questions = ref<Question[]>();
 const currentQuestion = computed(() => {
-  return (questions.value || []).find((x) => x.id === currentQuestionId.value);
+  return (questions.value || []).find(
+    (x) => x.id === activeQuestion?.value?.question,
+  );
 });
 
 function getAllQuestions() {
@@ -43,6 +33,22 @@ function getAllQuestions() {
 
 getAllQuestions();
 
+async function getActiveQuestion() {
+  const { data, error } = await supabase
+    .from("activeQuestion")
+    .select("*")
+    .single();
+  if (error) {
+    alert(error.message);
+  } else {
+    activeQuestion.value = {
+      ...data,
+      begin_at: new Date(data.begin_at),
+    };
+  }
+}
+getActiveQuestion();
+
 // Listen to inserts
 supabase
   .channel("activeQuestion")
@@ -50,27 +56,75 @@ supabase
     "postgres_changes",
     { event: "UPDATE", schema: "public", table: "activeQuestion" },
     (payload) => {
-      status.value = payload.new.status;
-      currentQuestionId.value = payload.new.question;
+      activeQuestion.value = {
+        ...payload.new,
+        begin_at: new Date(payload.new.begin_at),
+      } as ActiveQuestion;
     },
   )
   .subscribe();
 
-function handleSubmit() {
-  // submit answer to supabase
+watch(
+  () => activeQuestion.value?.question,
+  () => {
+    submitted.value = false;
+  },
+);
+
+async function handleSubmit(answer: {
+  answer: "a" | "b" | "c" | "d";
+  isCorrect: boolean;
+}) {
+  const { data, error } = await supabase
+    .from("answers")
+    .insert([
+      {
+        question: activeQuestion.value?.question,
+        answer: answer.answer,
+        user_id: session.value.user.id,
+        isCorrect: answer.isCorrect,
+      },
+    ])
+    .select();
+
+  if (error) {
+    alert(error.message);
+  } else {
+    submitted.value = true;
+    nextTick(() => {
+      alert("Submitted!");
+    });
+  }
 }
+
+const message = computed(() => {
+  return {
+    NotStarted: "",
+    BeingRead: "Listen to the question from the instructor",
+    Answering: "Select your answer and submit",
+    TimesUp: "Wait for instructor to reveal the answer",
+    ShowingAnswer: "",
+    Finished: "",
+  }[activeQuestion.value?.status || "NotStarted"];
+});
 </script>
 
 <template>
   <div class="viewport-center">
-    <h1 v-if="status === 'NotStarted'">Waiting for Quiz to Start</h1>
+    <h1 v-if="activeQuestion?.status === 'NotStarted'">
+      Waiting for Quiz to Start
+    </h1>
     <div v-else-if="currentQuestion?.content">
-      <QuizTimer :status="status" />
+      <QuizTimer
+        :status="activeQuestion?.status || 'NotStarted'"
+        :beginAt="activeQuestion?.begin_at"
+      />
       <QuizQuestion
         :content="currentQuestion?.content"
         @submit="handleSubmit"
-        :show-correct-answer="status === 'ShowingAnswer'"
-        :disabled="status !== 'Answering'"
+        :show-correct-answer="activeQuestion?.status === 'ShowingAnswer'"
+        :disabled="activeQuestion?.status !== 'Answering' || submitted"
+        :message="message"
       />
     </div>
   </div>

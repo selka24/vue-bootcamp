@@ -8,12 +8,10 @@ export const useUser = () => {
 
   onMounted(() => {
     supabase.auth.getSession().then(({ data }) => {
-      console.log("session", data.session);
       session.value = data.session;
     });
 
     supabase.auth.onAuthStateChange((_, _session) => {
-      console.log("_session", _session);
       session.value = _session;
     });
   });

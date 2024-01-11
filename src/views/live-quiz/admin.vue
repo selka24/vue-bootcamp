@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onUnmounted } from "vue";
 import { useSupabase } from "@/composables/useSupabase";
 import QuizQuestion from "@/components/internal/QuizQuestion.vue";
 import type { TStatus, Question } from "@/types";
 import QuizTimer from "@/components/internal/QuizTimer.vue";
 
 const supabase = useSupabase();
-
 const status = ref<TStatus>("NotStarted");
+const beginAt = ref<Date | null>();
 
 // questions
 const currentQuestionId = ref(1);
@@ -38,17 +38,20 @@ function handleSubmit() {
       status.value = "BeingRead";
     },
     BeingRead: () => {
+      beginAt.value = new Date();
       status.value = "Answering";
     },
     Answering: () => {
       status.value = "TimesUp";
     },
     TimesUp: () => {
+      console.log("times up");
       status.value = "ShowingAnswer";
     },
     ShowingAnswer: () => {
       status.value = "BeingRead";
       currentQuestionId.value++;
+      answers.value = [];
       if (currentQuestionId.value > (questions.value || []).length) {
         status.value = "Finished";
       }
@@ -73,11 +76,51 @@ const buttonText = computed(() => {
 });
 
 watch(status, async () => {
+  console.log("wather fire");
+  const begin_at =
+    status.value === "Answering" ? new Date().toISOString() : null;
+
   await supabase
     .from("activeQuestion")
-    .update({ status: status.value, question: currentQuestionId.value })
+    .update({
+      status: status.value,
+      question: currentQuestionId.value,
+      begin_at,
+    })
     .eq("id", 1);
 });
+
+addEventListener("beforeunload", async (event) => {
+  await supabase
+    .from("activeQuestion")
+    .update({
+      status: "NotStarted",
+      question: 1,
+    })
+    .eq("id", 1);
+});
+
+// handle answers
+
+const answers = ref<any[]>([]);
+const rightAnswers = computed(() => {
+  return answers.value.filter((x) => x.isCorrect);
+});
+
+const wrongAnswers = computed(() => {
+  return answers.value.filter((x) => !x.isCorrect);
+});
+
+supabase
+  .channel("answers")
+  .on(
+    "postgres_changes",
+    { event: "INSERT", schema: "public", table: "answers" },
+    (payload) => {
+      answers.value = [...answers.value, payload.new];
+    },
+  )
+  .subscribe();
 </script>
 <template>
   <div class="viewport-center">
@@ -88,18 +131,15 @@ watch(status, async () => {
       </button>
     </div>
     <div v-if="status !== 'Finished' && status !== 'NotStarted'">
-      <div class="w-[960px]">
-        <QuizTimer :status="status" @timeup="handleSubmit" />
+      <div>
+        <QuizTimer
+          :beginAt="beginAt"
+          :status="status"
+          @timeup="status = 'TimesUp'"
+        />
 
-        <!-- Times Up -->
-        <div v-if="status === 'TimesUp'">
-          <h1 class="text-5xl">Time's Up!</h1>
-        </div>
-
-        <!-- The Correct Answer Is -->
-        <div v-if="status === 'ShowingAnswer'">
-          <h1 class="text-5xl">The Correct Answer Is</h1>
-        </div>
+        Right Answers : {{ rightAnswers.length }} Wrong Answers :
+        {{ wrongAnswers.length }}
 
         <!-- Quiz Question -->
         <QuizQuestion

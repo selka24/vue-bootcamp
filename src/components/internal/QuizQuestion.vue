@@ -12,6 +12,7 @@ const props = withDefaults(
     btnText?: string;
     showCorrectAnswer?: boolean;
     disabled?: boolean;
+    message?: string;
   }>(),
   {
     btnText: "Submit",
@@ -100,13 +101,21 @@ watch(
         </label>
       </li>
     </ul>
-    <button
-      class="float-right w-1/2 btn btn-primary"
-      @click="emit('submit', selected)"
-      :disabled="disabled"
-    >
-      {{ props.btnText }}
-    </button>
+    <div class="flex items-center justify-between">
+      <div>{{ message }}</div>
+      <button
+        class="w-1/2 btn btn-primary"
+        @click="
+          emit('submit', {
+            answer: selected,
+            isCorrect: selected === correctAnswer,
+          })
+        "
+        :disabled="disabled"
+      >
+        {{ props.btnText }}
+      </button>
+    </div>
   </div>
 </template>
 
