@@ -96,13 +96,22 @@ watch(
             :value="key"
             id="answer"
             name="answer"
+            :disabled="disabled"
           />
           <vue-markdown :source="choice" :options="options" />
         </label>
       </li>
     </ul>
-    <div class="flex items-center justify-between">
-      <div>{{ message }}</div>
+    <div class="flex items-center justify-between gap-3">
+      <div
+        class="flex items-center w-1/2 gap-2 px-2 py-3 text-gray-900 bg-gray-500 rounded"
+        :class="{
+          invisible: !message,
+        }"
+      >
+        <Icon icon="fa:lightbulb-o"></Icon>
+        {{ message }}
+      </div>
       <button
         class="w-1/2 btn btn-primary"
         @click="

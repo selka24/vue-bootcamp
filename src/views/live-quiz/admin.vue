@@ -121,6 +121,13 @@ supabase
     },
   )
   .subscribe();
+
+const message = computed(() => {
+  if (status.value === "Answering" || status.value === "TimesUp") {
+    return ` ${rightAnswers.value.length} right, ${wrongAnswers.value.length} wrong anwers `;
+  }
+  return "";
+});
 </script>
 <template>
   <div class="viewport-center">
@@ -138,9 +145,6 @@ supabase
           @timeup="status = 'TimesUp'"
         />
 
-        Right Answers : {{ rightAnswers.length }} Wrong Answers :
-        {{ wrongAnswers.length }}
-
         <!-- Quiz Question -->
         <QuizQuestion
           v-if="currentQuestion?.content"
@@ -148,6 +152,7 @@ supabase
           :btn-text="buttonText"
           @submit="handleSubmit"
           :show-correct-answer="status === 'ShowingAnswer'"
+          :message="message"
         />
       </div>
     </div>
