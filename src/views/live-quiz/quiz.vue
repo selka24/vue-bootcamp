@@ -8,7 +8,7 @@ import { useConfetti } from "@/composables/useConfetti";
 import type { Question, ActiveQuestion } from "@/types";
 import { useLocalStorage } from "@vueuse/core";
 const supabase = useSupabase();
-const { session } = useUser();
+const { session, login } = useUser();
 
 const submitted = useLocalStorage("question-submitted", false);
 const activeQuestion = ref<ActiveQuestion>();
@@ -198,7 +198,14 @@ const unwatchQuizIdChecker = watch(
       v-if="activeQuestion?.status === 'NotStarted'"
       class="viewport-center mt-[-100px] text-2xl"
     >
-      Waiting for Instructor to Begin the Quiz...
+      <span v-if="session"> Waiting for Instructor to Begin the Quiz... </span>
+      <span v-else class="text-center">
+        Please login to take the quiz
+        <br />
+        <button @click="login" class="mt-4 btn btn-primary btn-sm">
+          Login with <Icon icon="fa:github"></Icon>Github
+        </button>
+      </span>
     </h1>
 
     <!-- Quiz Finished-->
