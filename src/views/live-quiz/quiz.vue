@@ -1,22 +1,25 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from "vue";
+import { ref, computed, watch, onUnmounted } from "vue";
 import QuizQuestion from "@/components/internal/QuizQuestion.vue";
 import { useUser } from "@/composables/useUser";
 import { useSupabase } from "@/composables/useSupabase";
 import QuizTimer from "@/components/internal/QuizTimer.vue";
+import { useConfetti } from "@/composables/useConfetti";
 import type { Question, ActiveQuestion } from "@/types";
+import { useLocalStorage } from "@vueuse/core";
 const supabase = useSupabase();
 const { session } = useUser();
 
-const submitted = ref(false);
+const submitted = useLocalStorage("question-submitted", false);
 const activeQuestion = ref<ActiveQuestion>();
+
+//#region Question Content Logical Concern
 const questions = ref<Question[]>();
 const currentQuestion = computed(() => {
   return (questions.value || []).find(
     (x) => x.id === activeQuestion?.value?.question,
   );
 });
-
 function getAllQuestions() {
   supabase
     .from("questions")
@@ -30,8 +33,10 @@ function getAllQuestions() {
       }
     });
 }
-
 getAllQuestions();
+// #endregion
+
+//#region Active Question Logical Concern
 
 async function getActiveQuestion() {
   const { data, error } = await supabase
@@ -48,10 +53,9 @@ async function getActiveQuestion() {
   }
 }
 getActiveQuestion();
+const activeQuestionChannel = supabase.channel("activeQuestion");
 
-// Listen to inserts
-supabase
-  .channel("activeQuestion")
+activeQuestionChannel
   .on(
     "postgres_changes",
     { event: "UPDATE", schema: "public", table: "activeQuestion" },
@@ -64,17 +68,35 @@ supabase
   )
   .subscribe();
 
+// Reset the submitted flag if the question changes
 watch(
   () => activeQuestion.value?.question,
-  () => {
+  (newValue, oldValue) => {
+    // If no old value then we're just starting up
+    // and there's no need to reset the submitted flag
+    // or the user refreshed the page before the quiz was finished
+    // and we don't want to reset the submitted flag
+    // we want to keep there submitted status that's in local storage
+    if (!oldValue) return;
     submitted.value = false;
   },
 );
 
-async function handleSubmit(answer: {
-  answer: "a" | "b" | "c" | "d";
+onUnmounted(() => {
+  activeQuestionChannel.unsubscribe();
+});
+
+//#endregion
+
+//#region Answers Logical Concern
+type SubmittedAnswer = {
+  answer: "a" | "b" | "c" | "d" | null;
   isCorrect: boolean;
-}) {
+  questionId?: number;
+};
+const answers = useLocalStorage<SubmittedAnswer[]>("quiz-answers", []);
+async function handleSubmit(answer: SubmittedAnswer) {
+  answers.value.push(answer);
   const { data, error } = await supabase
     .from("answers")
     .insert([
@@ -91,40 +113,132 @@ async function handleSubmit(answer: {
     alert(error.message);
   } else {
     submitted.value = true;
-    nextTick(() => {
-      alert("Submitted!");
+  }
+}
+async function ranOutOfTime() {
+  if (!submitted.value) {
+    handleSubmit({
+      answer: null,
+      isCorrect: false,
+      questionId: activeQuestion.value?.question,
     });
   }
 }
+const rightAnswers = computed(() => {
+  return answers.value.filter((x) => x.isCorrect);
+});
+// Reset the answers and submit status if the quiz starts over
+watch(
+  () => activeQuestion.value?.status,
+  () => {
+    if (activeQuestion.value?.status === "NotStarted") {
+      answers.value = [];
+      submitted.value = false;
+    }
+  },
+);
+//#endregion
 
+//#region User Hints/Messages Logical Concern
 const message = computed(() => {
   return {
     NotStarted: "",
     BeingRead: "Listen to the question from the instructor",
-    Answering: "Select your answer and submit",
+    Answering: submitted.value
+      ? "Your submission has been received. Please wait for others to finish."
+      : "Select your answer and submit",
     TimesUp: "Wait for instructor to reveal the answer",
-    ShowingAnswer: "",
+    ShowingAnswer: answers.value.at(-1)?.isCorrect
+      ? "You got it right!"
+      : answers.value.at(-1)?.answer
+        ? "Sorry, you got this one wrong"
+        : "You didn't answer in time",
     Finished: "",
   }[activeQuestion.value?.status || "NotStarted"];
 });
+//#endregion
+
+//#region Finished Quiz Logical Concern
+const { addConfetti } = useConfetti();
+const passed = computed(() => {
+  if (activeQuestion.value?.status !== "Finished") return null;
+  return rightAnswers.value.length >= 3;
+});
+watch(
+  () => activeQuestion.value?.status,
+  () => {
+    if (activeQuestion.value?.status === "Finished" && passed.value) {
+      addConfetti();
+    }
+  },
+);
+//#endregion
+
+// #region Handle Brand New Quiz
+const quizId = useLocalStorage("quiz-id", "");
+const unwatchQuizIdChecker = watch(
+  () => activeQuestion.value?.quiz_id,
+  (quiz_id) => {
+    if (quiz_id !== quizId.value) {
+      quizId.value = quiz_id;
+      answers.value = [];
+      submitted.value = false;
+    }
+    unwatchQuizIdChecker();
+  },
+);
+
+// #endregion
 </script>
 
 <template>
-  <div class="viewport-center">
-    <h1 v-if="activeQuestion?.status === 'NotStarted'">
-      Waiting for Quiz to Start
+  <div class="mt-[100px] px-10 max-w-7xl m-auto">
+    <!-- Quiz Before Start -->
+    <h1
+      v-if="activeQuestion?.status === 'NotStarted'"
+      class="viewport-center mt-[-100px] text-2xl"
+    >
+      Waiting for Instructor to Begin the Quiz...
     </h1>
+
+    <!-- Quiz Finished-->
+    <div
+      v-else-if="activeQuestion?.status === 'Finished'"
+      class="text-center viewport-center mt-[-100px]"
+    >
+      <div>
+        <h1 class="mb-3 text-5xl">The Quiz is Finished</h1>
+        <h2 class="mb-6 text-2xl">
+          You would have {{ passed ? "passed" : "failed" }} the multiple choice
+          portion of the exam
+        </h2>
+        <h3 class="text-3xl">
+          You got
+          <strong class="text-primary">{{ rightAnswers.length }}</strong> out of
+          <strong class="text-primary">{{ questions?.length }}</strong> correct
+        </h3>
+      </div>
+    </div>
+
+    <!-- Quiz In Progress -->
     <div v-else-if="currentQuestion?.content">
       <QuizTimer
         :status="activeQuestion?.status || 'NotStarted'"
         :beginAt="activeQuestion?.begin_at"
+        @timeup="ranOutOfTime"
       />
       <QuizQuestion
         :content="currentQuestion?.content"
-        @submit="handleSubmit"
+        :number="currentQuestion?.id"
+        @submit="
+          handleSubmit({ ...$event, questionId: activeQuestion?.question })
+        "
         :show-correct-answer="activeQuestion?.status === 'ShowingAnswer'"
         :disabled="activeQuestion?.status !== 'Answering' || submitted"
         :message="message"
+        :value="
+          answers.find((x) => x.questionId === activeQuestion?.question)?.answer
+        "
       />
     </div>
   </div>

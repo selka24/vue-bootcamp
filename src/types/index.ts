@@ -17,4 +17,5 @@ export interface ActiveQuestion {
   status: TStatus;
   question: number;
   begin_at: Date;
+  quiz_id: string;
 }

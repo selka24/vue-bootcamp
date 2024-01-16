@@ -13,6 +13,9 @@ const props = withDefaults(
     showCorrectAnswer?: boolean;
     disabled?: boolean;
     message?: string;
+    btnIcon?: string;
+    value?: string | null;
+    number: number;
   }>(),
   {
     btnText: "Submit",
@@ -50,7 +53,7 @@ const options = {
   },
 };
 
-const selected = ref();
+const selected = ref<string | undefined | null>(props.value);
 
 watch(
   () => props.content,
@@ -61,7 +64,8 @@ watch(
 </script>
 
 <template>
-  <div class="relative z-50 mt-16">
+  <div class="relative mb-24">
+    <h1 class="text-2xl font-bold">Question # {{ number }}</h1>
     <article class="prose lg:prose-2xl">
       <vue-markdown :source="question" :options="options" />
     </article>
@@ -122,6 +126,7 @@ watch(
         "
         :disabled="disabled"
       >
+        <Icon v-if="props.btnIcon" :icon="props.btnIcon" />
         {{ props.btnText }}
       </button>
     </div>

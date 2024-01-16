@@ -4,10 +4,12 @@ import { useSupabase } from "@/composables/useSupabase";
 import QuizQuestion from "@/components/internal/QuizQuestion.vue";
 import type { TStatus, Question } from "@/types";
 import QuizTimer from "@/components/internal/QuizTimer.vue";
+import { v4 as uuid } from "uuid";
 
 const supabase = useSupabase();
 const status = ref<TStatus>("NotStarted");
 const beginAt = ref<Date | null>();
+const quizId = ref("");
 
 // questions
 const currentQuestionId = ref(1);
@@ -35,6 +37,7 @@ getAllQuestions();
 function handleSubmit() {
   const actions = {
     NotStarted: () => {
+      quizId.value = uuid();
       status.value = "BeingRead";
     },
     BeingRead: () => {
@@ -45,7 +48,6 @@ function handleSubmit() {
       status.value = "TimesUp";
     },
     TimesUp: () => {
-      console.log("times up");
       status.value = "ShowingAnswer";
     },
     ShowingAnswer: () => {
@@ -70,13 +72,29 @@ const buttonText = computed(() => {
     BeingRead: "Start Timer",
     Answering: "Stop Timer",
     TimesUp: "Reveal Answer",
-    ShowingAnswer: "Next Question",
+    ShowingAnswer:
+      currentQuestionId.value === questions.value?.length
+        ? "Finish Quiz"
+        : "Next Question",
+    Finished: "Finished",
+  }[status.value];
+});
+
+const buttonIcon = computed(() => {
+  return {
+    NotStarted: "",
+    BeingRead: "fa:clock-o",
+    Answering: "fa:stop-circle-o",
+    TimesUp: "mdi:wand",
+    ShowingAnswer:
+      currentQuestionId.value === questions.value?.length
+        ? "fa6-solid:flag-checkered"
+        : "lucide:chevron-right",
     Finished: "Finished",
   }[status.value];
 });
 
 watch(status, async () => {
-  console.log("wather fire");
   const begin_at =
     status.value === "Answering" ? new Date().toISOString() : null;
 
@@ -84,8 +102,9 @@ watch(status, async () => {
     .from("activeQuestion")
     .update({
       status: status.value,
-      question: currentQuestionId.value,
+      question: status.value === "Finished" ? 1 : currentQuestionId.value,
       begin_at,
+      quiz_id: quizId.value,
     })
     .eq("id", 1);
 });
@@ -111,8 +130,8 @@ const wrongAnswers = computed(() => {
   return answers.value.filter((x) => !x.isCorrect);
 });
 
-supabase
-  .channel("answers")
+const answersChannel = supabase.channel("answers");
+answersChannel
   .on(
     "postgres_changes",
     { event: "INSERT", schema: "public", table: "answers" },
@@ -122,6 +141,10 @@ supabase
   )
   .subscribe();
 
+onUnmounted(() => {
+  answersChannel.unsubscribe();
+});
+
 const message = computed(() => {
   if (status.value === "Answering" || status.value === "TimesUp") {
     return ` ${rightAnswers.value.length} right, ${wrongAnswers.value.length} wrong anwers `;
@@ -130,12 +153,17 @@ const message = computed(() => {
 });
 </script>
 <template>
-  <div class="viewport-center">
-    <div v-if="status === 'NotStarted'" class="text-center">
-      <h1 class="mb-10 text-9xl">Live Quiz</h1>
-      <button class="w-72 btn btn-primary btn-lg" @click="handleSubmit">
-        Start
-      </button>
+  <div class="mt-[100px] px-10 max-w-7xl m-auto">
+    <div
+      v-if="status === 'NotStarted'"
+      class="text-center viewport-center mt-[-100px]"
+    >
+      <div>
+        <h1 class="mb-10 text-9xl">Live Quiz</h1>
+        <button class="w-72 btn btn-primary btn-lg" @click="handleSubmit">
+          Start
+        </button>
+      </div>
     </div>
     <div v-if="status !== 'Finished' && status !== 'NotStarted'">
       <div>
@@ -148,21 +176,29 @@ const message = computed(() => {
         <!-- Quiz Question -->
         <QuizQuestion
           v-if="currentQuestion?.content"
+          :number="currentQuestion?.id"
           :content="currentQuestion?.content"
           :btn-text="buttonText"
           @submit="handleSubmit"
           :show-correct-answer="status === 'ShowingAnswer'"
           :message="message"
+          :btn-icon="buttonIcon"
         />
       </div>
     </div>
 
     <!-- Finished -->
-    <div v-if="status === 'Finished'" class="text-center">
-      <h1 class="mb-10 text-9xl">Finished!</h1>
-      <button class="w-72 btn btn-primary btn-lg" @click="handleSubmit">
-        Restart
-      </button>
+    <div
+      v-if="status === 'Finished'"
+      class="text-center viewport-center mt-[-100px]"
+    >
+      <div>
+        <h1 class="mb-2 text-9xl">Finished!</h1>
+        <h2 class="mb-10 text-4xl">How'd you do?</h2>
+        <button class="w-72 btn btn-primary btn-lg" @click="handleSubmit">
+          Restart
+        </button>
+      </div>
     </div>
   </div>
 </template>

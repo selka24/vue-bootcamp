@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TStatus } from "@/types";
-import { useNow } from "@vueuse/core";
+import { useNow, refAutoReset } from "@vueuse/core";
 
 import { toRefs, computed, watch, ref } from "vue";
 
@@ -29,7 +29,7 @@ const timeLeft = computed(() => {
 
 const show = computed(() => timeLeft.value > 0);
 
-const stopped = ref(false);
+const stopped = ref(true);
 watch(timeLeft, (tl) => {
   if (tl <= 0 && !stopped.value) {
     emit("timeup");
@@ -39,26 +39,41 @@ watch(timeLeft, (tl) => {
 
 const { status, seconds, beginAt } = toRefs(props);
 watch(status, (value) => {
-  if (value === "NotStarted") stopped.value = false;
+  if (value === "Answering") {
+    stopped.value = false;
+  } else {
+    stopped.value = true;
+  }
 });
-watch(beginAt, (value) => {
-  if (value) stopped.value = false;
+
+const outOfTimeMessage = refAutoReset(false, 3000);
+watch(stopped, () => {
+  if (stopped.value) {
+    outOfTimeMessage.value = true;
+  }
 });
 </script>
 <template>
-  <div class="w-[800px]">
+  <div class="relative">
     <div
       :class="{
-        hidden: status !== 'Answering' || !show,
+        invisible: status !== 'Answering' || !show,
       }"
     >
       <div
-        class="h-2 transition-all duration-1000 ease-linear rounded bg-primary"
+        class="h-2 rounded bg-primary"
         :style="{
           width: `${(timeLeft / seconds) * 100 - seconds / 10}%`,
         }"
       ></div>
       <span class="text-sm">{{ Math.ceil(timeLeft) }} seconds left</span>
+    </div>
+    <div
+      v-if="outOfTimeMessage"
+      class="absolute top-0 flex items-center gap-2 text-red-500"
+    >
+      <Icon icon="fa:clock-o" />
+      Out of Time!
     </div>
   </div>
 </template>
