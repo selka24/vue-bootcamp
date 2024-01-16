@@ -39,6 +39,9 @@ const allLinks = [
   ["Exercise 13 Start", "/exercises/13-begin"],
   ["Exercise 13 End", "/exercises/13-end"],
   ["Day 3", "/day-3-welcome"],
+  ["Live Quiz", "/live-quiz/quiz"],
+  ["", ""],
+  ["", ""],
 ];
 
 const route = useRoute();
@@ -131,7 +134,7 @@ const prevLink = computed(() => {
         class="drawer-overlay"
       ></label>
       <ul
-        class="min-h-full p-5 pt-20 overflow-auto text-lg menu w-80 bg-base-200 text-base-content"
+        class="min-h-full p-5 pt-20 mb-10 overflow-auto text-lg menu w-80 bg-base-200 text-base-content"
       >
         <li
           v-for="link in allLinks"
