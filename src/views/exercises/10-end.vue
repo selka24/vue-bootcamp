@@ -43,7 +43,10 @@ onUnmounted(() => {
         <UserProfileCardEdit
           v-if="editing"
           v-bind="user"
-          @saved="user = $event"
+          @saved="
+            user = $event;
+            editing = false;
+          "
         />
         <UserProfileCard v-else v-bind="user" />
       </Transition>

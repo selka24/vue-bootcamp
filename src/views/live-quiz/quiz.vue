@@ -239,8 +239,16 @@ const unwatchQuizIdChecker = watch(
       <div>
         <h1 class="mb-3 text-5xl">The Quiz is Finished</h1>
         <h2 class="mb-6 text-2xl">
-          You would have {{ passed ? "passed" : "failed" }} the multiple choice
-          portion of the exam
+          You would have
+          <strong
+            class="font-bold"
+            :class="{
+              'text-success': passed,
+              'text-error': !passed,
+            }"
+            >{{ passed ? "passed" : "failed" }}</strong
+          >
+          the multiple choice portion of the exam
         </h2>
         <h3 class="text-3xl">
           You got

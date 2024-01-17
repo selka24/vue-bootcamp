@@ -119,7 +119,7 @@ watch(
     </ul>
     <div class="flex items-center justify-between gap-3">
       <div
-        class="flex items-center w-1/2 gap-2 px-2 py-3 text-gray-900 bg-gray-500 rounded blink"
+        class="flex items-center w-1/2 gap-2 px-2 py-3 text-gray-900 bg-gray-200 rounded dark:bg-gray-500 blink"
         :class="{
           invisible: !message,
           active: animateMessage,

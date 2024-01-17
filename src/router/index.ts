@@ -5,6 +5,7 @@ const views = import.meta.glob("@/views/*.vue");
 const exampleViews = import.meta.glob("@/views/examples/*.vue");
 const exerciseViews = import.meta.glob("@/views/exercises/*.vue");
 const liveQuizViews = import.meta.glob("@/views/live-quiz/*.vue");
+const challengeViews = import.meta.glob("@/views/challenges/*.vue");
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,6 +19,7 @@ const router = createRouter({
     ...generateRoutes(exampleViews, "/examples"),
     ...generateRoutes(exerciseViews, "/exercises"),
     ...generateRoutes(liveQuizViews, "/live-quiz"),
+    ...generateRoutes(challengeViews, "/challenges"),
   ],
 });
 

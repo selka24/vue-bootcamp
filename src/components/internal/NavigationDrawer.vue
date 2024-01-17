@@ -38,10 +38,11 @@ const allLinks = [
   ["Exercise 12 Bonus End 🔥", "/exercises/12-zbonus-end"],
   ["Exercise 13 Start", "/exercises/13-begin"],
   ["Exercise 13 End", "/exercises/13-end"],
-  ["Day 3", "/day-3-welcome"],
+  ["Day 3", "/day-3-welcome", true],
   ["Live Quiz", "/live-quiz/quiz"],
-  ["", ""],
-  ["", ""],
+  ["Feature Challenge", "/challenges/feature-challenge"],
+  ["Bug Challenge", "/challenges/bug-challenge"],
+  ["Take Home Practice Exam", "/practice-exam"],
 ];
 
 const route = useRoute();
@@ -87,7 +88,7 @@ const prevLink = computed(() => {
 </script>
 <template>
   <header
-    class="fixed z-50 flex justify-between w-full p-3 text-2xl bg-gray-100 dark:bg-neutral"
+    class="fixed z-[99999999] flex justify-between w-full p-3 text-2xl bg-gray-100 dark:bg-neutral"
   >
     <h1 class="flex items-center gap-3">
       <RouterLink to="/"><Icon icon="material-symbols:home" /></RouterLink>
@@ -127,14 +128,14 @@ const prevLink = computed(() => {
     <div class="drawer-content">
       <slot></slot>
     </div>
-    <div class="drawer-side">
+    <div class="drawer-side z-[9999999]">
       <label
         for="my-drawer"
         aria-label="close sidebar"
         class="drawer-overlay"
       ></label>
       <ul
-        class="min-h-full p-5 pt-20 mb-10 overflow-auto text-lg menu w-80 bg-base-200 text-base-content"
+        class="min-h-full p-5 pt-20 pb-20 mb-10 overflow-auto text-lg menu w-80 bg-base-200 text-base-content"
       >
         <li
           v-for="link in allLinks"
