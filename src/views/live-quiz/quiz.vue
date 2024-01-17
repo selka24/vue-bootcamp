@@ -156,6 +156,29 @@ const message = computed(() => {
     Finished: "",
   }[activeQuestion.value?.status || "NotStarted"];
 });
+const messageIcon = computed(() => {
+  return {
+    NotStarted: "",
+    BeingRead: "fa:volume-up",
+    Answering: submitted.value ? "fa:check" : "fa:question",
+    TimesUp: "fa:clock-o",
+    ShowingAnswer: answers.value.at(-1)?.isCorrect ? "fa:check" : "fa:times",
+    Finished: "",
+  }[activeQuestion.value?.status || "NotStarted"];
+});
+
+const messageIconClass = computed(() => {
+  return {
+    NotStarted: "",
+    BeingRead: "text-info",
+    Answering: "text-success",
+    TimesUp: "text-warning",
+    ShowingAnswer: answers.value.at(-1)?.isCorrect
+      ? "text-success"
+      : "text-error",
+    Finished: "",
+  }[activeQuestion.value?.status || "NotStarted"];
+});
 //#endregion
 
 //#region Finished Quiz Logical Concern
@@ -243,6 +266,8 @@ const unwatchQuizIdChecker = watch(
         :show-correct-answer="activeQuestion?.status === 'ShowingAnswer'"
         :disabled="activeQuestion?.status !== 'Answering' || submitted"
         :message="message"
+        :message-icon="messageIcon"
+        :message-icon-class="messageIconClass"
         :value="
           answers.find((x) => x.questionId === activeQuestion?.question)?.answer
         "

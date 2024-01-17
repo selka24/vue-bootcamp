@@ -3,6 +3,7 @@ import VueMarkdown from "vue-markdown-render";
 import hljs from "highlight.js";
 import "highlight.js/styles/vs2015.css";
 import { ref, computed, watch } from "vue";
+import { refAutoReset } from "@vueuse/core";
 
 const emit = defineEmits(["submit"]);
 
@@ -13,6 +14,8 @@ const props = withDefaults(
     showCorrectAnswer?: boolean;
     disabled?: boolean;
     message?: string;
+    messageIcon?: string;
+    messageIconClass?: string;
     btnIcon?: string;
     value?: string | null;
     number: number;
@@ -59,6 +62,14 @@ watch(
   () => props.content,
   () => {
     selected.value = null;
+  },
+);
+
+const animateMessage = refAutoReset(false, 1000);
+watch(
+  () => props.message,
+  () => {
+    animateMessage.value = true;
   },
 );
 </script>
@@ -108,12 +119,16 @@ watch(
     </ul>
     <div class="flex items-center justify-between gap-3">
       <div
-        class="flex items-center w-1/2 gap-2 px-2 py-3 text-gray-900 bg-gray-500 rounded"
+        class="flex items-center w-1/2 gap-2 px-2 py-3 text-gray-900 bg-gray-500 rounded blink"
         :class="{
           invisible: !message,
+          active: animateMessage,
         }"
       >
-        <Icon icon="fa:lightbulb-o"></Icon>
+        <Icon
+          :icon="messageIcon || 'fa:lightbulb-o'"
+          :class="messageIconClass"
+        ></Icon>
         {{ message }}
       </div>
       <button
@@ -136,5 +151,25 @@ watch(
 <style>
 .prose {
   max-width: 100%;
+}
+
+.blink.active {
+  animation: blink 0.5s cubic-bezier(0.7, 0, 0.7, 1.5);
+}
+
+@keyframes blink {
+  0% {
+    transform: scale(1);
+  }
+
+  33% {
+    transform: scale(1.05);
+  }
+  66% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 </style>
