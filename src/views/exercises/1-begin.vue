@@ -1,7 +1,10 @@
 <script setup>
 import { ref } from "vue";
-const msg = ref("Hello Bootcampers!");
+const name = ref("Bootcampers");
+const item = ref("coffee");
 </script>
 <template>
-  <div class="viewport-center">Put your code here</div>
+  <div class="viewport-center">
+    <div>Put your code here</div>
+  </div>
 </template>
