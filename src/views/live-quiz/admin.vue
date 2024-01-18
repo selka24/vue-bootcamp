@@ -10,12 +10,14 @@ import { useUser } from "@/composables/useUser";
 import { useRouter } from "vue-router";
 import { config } from "@/assets/live-quiz-questions/config";
 
-const { isAdmin } = useUser();
-
-if (!isAdmin.value) {
-  alert("Sorry you're not allowed to manage the live quiz");
-  useRouter().replace("/live-quiz/quiz");
-}
+const { isAdmin, session } = useUser();
+const router = useRouter();
+watch(session, () => {
+  if (!isAdmin.value) {
+    alert("Sorry you're not allowed to manage the live quiz");
+    router.replace("/live-quiz/quiz");
+  }
+});
 
 const supabase = useSupabase();
 const status = ref<TStatus>("NotStarted");

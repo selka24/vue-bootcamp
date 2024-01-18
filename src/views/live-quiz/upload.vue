@@ -3,13 +3,16 @@ import quizQuestions from "@/assets/live-quiz-questions/questions.md?raw";
 import { useSupabase } from "@/composables/useSupabase";
 import { useUser } from "@/composables/useUser";
 import { useRouter } from "vue-router";
+import { watch } from "vue";
 
-const { isAdmin } = useUser();
-
-if (!isAdmin.value) {
-  alert("Sorry you're not allowed to upload new questions");
-  useRouter().replace("/live-quiz/quiz");
-}
+const { isAdmin, session } = useUser();
+const router = useRouter();
+watch(session, () => {
+  if (!isAdmin.value) {
+    alert("Sorry you're not allowed to upload questions");
+    router.replace("/live-quiz/quiz");
+  }
+});
 
 const supabase = useSupabase();
 
