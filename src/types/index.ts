@@ -18,4 +18,5 @@ export interface ActiveQuestion {
   question: number;
   begin_at: Date;
   quiz_id: string;
+  time_limit_seconds: number;
 }

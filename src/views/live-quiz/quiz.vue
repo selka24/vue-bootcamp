@@ -215,7 +215,7 @@ const unwatchQuizIdChecker = watch(
 </script>
 
 <template>
-  <div class="mt-[100px] px-10 max-w-7xl m-auto">
+  <div class="mt-[60px] p-10 max-w-7xl m-auto relative">
     <!-- Quiz Before Start -->
     <h1
       v-if="activeQuestion?.status === 'NotStarted'"
@@ -263,6 +263,7 @@ const unwatchQuizIdChecker = watch(
       <QuizTimer
         :status="activeQuestion?.status || 'NotStarted'"
         :beginAt="activeQuestion?.begin_at"
+        :seconds="activeQuestion?.time_limit_seconds || 10"
         @timeup="ranOutOfTime"
       />
       <QuizQuestion

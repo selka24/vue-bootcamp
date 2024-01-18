@@ -37,7 +37,7 @@ watch(timeLeft, (tl) => {
   }
 });
 
-const { status, seconds, beginAt } = toRefs(props);
+const { status, seconds } = toRefs(props);
 watch(status, (value) => {
   if (value === "Answering") {
     stopped.value = false;
@@ -46,34 +46,32 @@ watch(status, (value) => {
   }
 });
 
-const outOfTimeMessage = refAutoReset(false, 3000);
-watch(stopped, () => {
-  if (stopped.value) {
-    outOfTimeMessage.value = true;
-  }
-});
+const convertSecondsToMinutes = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60)
+    .toString()
+    .padStart(2, "0");
+  const remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+};
 </script>
 <template>
-  <div class="relative">
-    <div
-      :class="{
-        invisible: status !== 'Answering' || !show,
-      }"
-    >
+  <div
+    :class="{
+      invisible: status !== 'Answering' || !show,
+    }"
+    class="mb-2"
+  >
+    <div class="relative h-2 bg-gray-300 rounded dark:bg-gray-700">
       <div
-        class="h-2 rounded bg-primary"
+        class="absolute top-0 left-0 h-2 rounded bg-primary"
         :style="{
-          width: `${(timeLeft / seconds) * 100 - seconds / 10}%`,
+          width: `${(timeLeft / seconds) * 100}%`,
         }"
       ></div>
-      <span class="text-sm">{{ Math.ceil(timeLeft) }} seconds left</span>
     </div>
-    <div
-      v-if="outOfTimeMessage"
-      class="absolute top-0 flex items-center gap-2 text-red-500"
+    <span class="flex items-center gap-2 mt-2 text-sm">
+      <Icon icon="fa:clock-o"></Icon>
+      {{ convertSecondsToMinutes(Math.ceil(timeLeft)) }} minutes left</span
     >
-      <Icon icon="fa:clock-o" />
-      Out of Time!
-    </div>
   </div>
 </template>

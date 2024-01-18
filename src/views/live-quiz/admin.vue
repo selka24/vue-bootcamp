@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { ref, computed, watch, onUnmounted } from "vue";
+import { ref, computed, watch, onUnmounted, onMounted } from "vue";
 import { useSupabase } from "@/composables/useSupabase";
 import QuizQuestion from "@/components/internal/QuizQuestion.vue";
 import type { TStatus, Question } from "@/types";
 import QuizTimer from "@/components/internal/QuizTimer.vue";
 import { v4 as uuid } from "uuid";
+import AppModal from "@/components/internal/AppModal.vue";
 
 const supabase = useSupabase();
 const status = ref<TStatus>("NotStarted");
 const beginAt = ref<Date | null>();
 const quizId = ref("");
+const timeLimitSeconds = ref(120);
 
 // questions
 const currentQuestionId = ref(1);
@@ -94,7 +96,7 @@ const buttonIcon = computed(() => {
   }[status.value];
 });
 
-watch(status, async () => {
+watch([status, timeLimitSeconds], async () => {
   const begin_at =
     status.value === "Answering" ? new Date().toISOString() : null;
 
@@ -105,6 +107,7 @@ watch(status, async () => {
       question: status.value === "Finished" ? 1 : currentQuestionId.value,
       begin_at,
       quiz_id: quizId.value,
+      time_limit_seconds: timeLimitSeconds.value,
     })
     .eq("id", 1);
 });
@@ -151,9 +154,30 @@ const message = computed(() => {
   }
   return "";
 });
+
+const showEdit = ref(false);
+
+let editKeyboardShortcutEvent: (event: KeyboardEvent) => void;
+onMounted(() => {
+  editKeyboardShortcutEvent = (event) => {
+    if (event.key === "e" && event.metaKey) {
+      console.log("showing edit");
+      showEdit.value = true;
+    }
+  };
+  window.addEventListener("keydown", editKeyboardShortcutEvent);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("keydown", editKeyboardShortcutEvent);
+});
+
+const editForm = ref({
+  timeLimit: timeLimitSeconds.value,
+});
 </script>
 <template>
-  <div class="mt-[100px] px-10 max-w-7xl m-auto">
+  <div class="mt-[60px] p-10 max-w-7xl m-auto relative">
     <div
       v-if="status === 'NotStarted'"
       class="text-center viewport-center mt-[-100px]"
@@ -170,6 +194,7 @@ const message = computed(() => {
         <QuizTimer
           :beginAt="beginAt"
           :status="status"
+          :seconds="timeLimitSeconds"
           @timeup="status = 'TimesUp'"
         />
 
@@ -201,4 +226,27 @@ const message = computed(() => {
       </div>
     </div>
   </div>
+
+  <AppModal :open="showEdit" @close="showEdit = false">
+    <form
+      @submit.prevent="
+        timeLimitSeconds = editForm.timeLimit;
+        showEdit = false;
+      "
+    >
+      <label class="w-full max-w-xs mb-2 form-control">
+        <div class="label">
+          <span class="label-text">Time Limit</span>
+        </div>
+        <input
+          type="text"
+          class="w-full max-w-xs input input-bordered"
+          name="timeLimit"
+          v-model="editForm.timeLimit"
+          autofocus
+        />
+      </label>
+      <button class="btn btn-primary">Save</button>
+    </form>
+  </AppModal>
 </template>
