@@ -72,7 +72,7 @@ Which of the following correctly defines a template ref?
 </script>
 
 <template>
-  <div ref="”myRef”"></div>
+  <div ref="myRef"></div>
 </template>
 ```
 
@@ -84,7 +84,7 @@ Which of the following correctly defines a template ref?
 </script>
 
 <template>
-  <div v-ref="”myRef”"></div>
+  <div v-ref="myRef"></div>
 </template>
 ```
 
@@ -96,7 +96,7 @@ Which of the following correctly defines a template ref?
 </script>
 
 <template>
-  <div @ref="”myRef”"></div>
+  <div @ref="myRef"></div>
 </template>
 ```
 
@@ -108,7 +108,7 @@ Which of the following correctly defines a template ref?
 </script>
 
 <template>
-  <div :ref="”myRef”"></div>
+  <div :ref="myRef"></div>
 </template>
 ```
 

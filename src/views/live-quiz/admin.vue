@@ -36,7 +36,7 @@ function getAllQuestions() {
   supabase
     .from("questions")
     .select("*")
-    .select()
+    .limit(config.numberOfRealQuestions + config.numberOfExampleQuestions)
     .then(({ data, error }) => {
       if (error) {
         alert(error.message);

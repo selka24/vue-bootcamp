@@ -26,7 +26,7 @@ function getAllQuestions() {
   supabase
     .from("questions")
     .select("*")
-    .select()
+    .limit(config.numberOfRealQuestions + config.numberOfExampleQuestions)
     .then(({ data, error }) => {
       if (!error) {
         questions.value = data;
@@ -113,15 +113,21 @@ async function handleSubmit(answer: SubmittedAnswer) {
     submitted.value = true;
   }
 }
-async function ranOutOfTime() {
-  if (!submitted.value) {
-    handleSubmit({
-      answer: null,
-      isCorrect: false,
-      questionId: activeQuestion.value?.question,
-    });
-  }
-}
+
+// submit and empty answer if the user runs out of time
+watch(
+  () => activeQuestion.value?.status,
+  (newStatus, oldStatus) => {
+    if (newStatus === "TimesUp" && !submitted.value) {
+      handleSubmit({
+        answer: null,
+        isCorrect: false,
+        questionId: activeQuestion.value?.question,
+      });
+    }
+  },
+);
+
 const rightAnswers = computed(() => {
   return answers.value.filter((x) => x.isCorrect);
 });
@@ -275,7 +281,6 @@ const unwatchQuizIdChecker = watch(
         :status="activeQuestion?.status || 'NotStarted'"
         :beginAt="activeQuestion?.begin_at"
         :seconds="activeQuestion?.time_limit_seconds || 10"
-        @timeup="ranOutOfTime"
       />
       <QuizQuestion
         :content="currentQuestion?.content"
