@@ -1,47 +1,74 @@
 <script setup lang="ts">
-// TODO: Write an actual feature challenge
-// Right now this is nothing but a copy of the bug challenge
-
 import CodingChallenge from "@/components/internal/CodingChallenge.vue";
 
-const openFiles = "src/components/NoteModal.vue";
+const repo = "Vuejs-Certification/bootcamp-level-1-feature-challenge";
+
+const openFiles =
+  "src/components/MessageForm.vue,src/components/MessageBoard.vue";
 
 const instructions = `
-# Note App Code Challenge
+# Message Board
 
 # Challenge Description
 
-This is a simple Note App that allows you to add, edit, and remove notes. However, there are currently some issues.
-
-Your task is to figure out why the issues exist and fix them!
+In this challenge, you are tasked with creating a simple message board system. The challenge will require that you work in \`MessageBoard.vue\` and \`MessageForm.vue\`.
 
 ## Requirements
 
-- Fix the bug in the application causing the page to reload when adding or editing notes
+### The MessageBoard component should:
 
-- Fix the bug in the application causing the title and content in the Note Modal to remain unchanged whenever the component's info prop changes.
+1. Accept the following props
 
-> 💡 HINT: The info prop is changed whenever you save a new note. Opening the Note Modal after saving a new note should have the title and content values cleared. Likewise, clicking edit on any existing note should show it's title and content in the Note Modal.
+   - \`messages\` - array, required
 
-- Do NOT rename any existing variables
+2. Display a list of the messages
 
-> 💡 HINT: Both bugs exist in \`NoteModal.vue\`
+   - Allow the parent component to determine the markup displayed within each list item
 
-![Screenshot of the solution](/bug-challenge-screenshot.gif)
+3. Transition the list items
+
+   - When a new message is added to the list, it should slide in
+   - You should do it with the provided \`slide\` style and a built-in Vue component
+
+   - > 💡 HINT: Make sure that the transition is applied to the item element being added
+   - > 💡 HINT: You can come back to this after you finish the MessageForm below
+
+### The MessageForm component should:
+
+1. Include a form with a single message input and a submit button
+
+2. Emit a \`send-msg\` event whenever the form is submitted (button is clicked or enter is pressed).
+
+   - The payload should be a message object with the following properties:
+     - id - a random id
+     - author: a random name (can use \`faker.person.firstName()\`)
+     - timestamp: the current date/time as a string
+     - content: the message provided in the input
+
+3. Disable the form submit button when the message is empty
+
+4. Reset the form after submit
+
+![Screenshot of the solution](/feature-challenge-screenshot.gif)
 
 ## Other Considerations
 
 - If you see the \`data-test\` attribute in the boilerplate don't remove it. If you remove it, your code may be invalid for the certificate.
+
+- TailwindCSS is preinstalled and with default config. It might be helpful for you if you want to have some styles. Or if you'd like to see a pretty result as you develop, you can use the following semantic classes that have been included: \`send-btn\`, \`input-box\`.
 `;
 
 const checklist = [
-  "When opening the add/edit note modal, the title and content display the correct values",
-  "When notes are added and updated, the page doesn't reload",
+  "The message list is displayed on the page",
+  "When a new message is added to the list, it slides in",
+  "A new message is added to the list when the user clicks the submit button or presses enter",
+  "The form submit button is disabled when the message is empty",
+  "The form is reset form after submit",
 ];
 </script>
 <template>
   <CodingChallenge
-    repo="Vuejs-Certification/bootcamp-level-1-bug-challenge"
+    :repo="repo"
     :instructions="instructions"
     :openFiles="openFiles"
     :checklist="checklist"
