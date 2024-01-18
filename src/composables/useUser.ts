@@ -1,7 +1,8 @@
 import { useSupabase } from "./useSupabase";
-import { ref, onMounted } from "vue";
+import type { Session } from "@supabase/supabase-js";
+import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
-const session = ref();
+const session = ref<Session | null>();
 export const useUser = () => {
   const supabase = useSupabase();
   const route = useRoute();
@@ -30,5 +31,12 @@ export const useUser = () => {
     supabase.auth.signOut();
   }
 
-  return { session, login, logout };
+  // This only helps provide some nice UX
+  // real security is done on the server
+  const isAdmin = computed(() => {
+    const admins = ["me@danielkelly.io"];
+    return admins.includes(session.value?.user.email || "");
+  });
+
+  return { session, login, logout, isAdmin };
 };

@@ -6,6 +6,15 @@ import type { TStatus, Question } from "@/types";
 import QuizTimer from "@/components/internal/QuizTimer.vue";
 import { v4 as uuid } from "uuid";
 import AppModal from "@/components/internal/AppModal.vue";
+import { useUser } from "@/composables/useUser";
+import { useRouter } from "vue-router";
+
+const { isAdmin } = useUser();
+
+if (!isAdmin.value) {
+  alert("Sorry you're not allowed to manage the live quiz");
+  useRouter().replace("/live-quiz/quiz");
+}
 
 const supabase = useSupabase();
 const status = ref<TStatus>("NotStarted");

@@ -36,12 +36,20 @@ const correctAnswer = computed((): "a" | "b" | "c" | "d" => {
 
 const answerChoices = computed(() => {
   const choices = content.value.slice(1, 5);
-  return {
+  const asObject = {
     a: choices[0].replace(/^Correct/, "").trim(),
     b: choices[1].replace(/^Correct/, "").trim(),
-    c: choices[2].replace(/^Correct/, "").trim(),
-    d: choices[3].replace(/^Correct/, "").trim(),
-  };
+  } as Record<"a" | "b" | "c" | "d", string>;
+
+  if (choices[2]) {
+    asObject.c = choices[2].replace(/^Correct/, "").trim();
+  }
+
+  if (choices[3]) {
+    asObject.d = choices[3].replace(/^Correct/, "").trim();
+  }
+
+  return asObject;
 });
 
 const options = {

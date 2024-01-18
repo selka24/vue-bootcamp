@@ -26,9 +26,7 @@ function getAllQuestions() {
     .select("*")
     .select()
     .then(({ data, error }) => {
-      if (error) {
-        alert(error.message);
-      } else {
+      if (!error) {
         questions.value = data;
       }
     });
@@ -43,9 +41,7 @@ async function getActiveQuestion() {
     .from("activeQuestion")
     .select("*")
     .single();
-  if (error) {
-    alert(error.message);
-  } else {
+  if (!error) {
     activeQuestion.value = {
       ...data,
       begin_at: new Date(data.begin_at),
@@ -103,7 +99,7 @@ async function handleSubmit(answer: SubmittedAnswer) {
       {
         question: activeQuestion.value?.question,
         answer: answer.answer,
-        user_id: session.value.user.id,
+        user_id: session.value?.user.id,
         isCorrect: answer.isCorrect,
       },
     ])
