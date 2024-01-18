@@ -42,5 +42,14 @@ const checklist = [
     :instructions="instructions"
     :openFiles="openFiles"
     :checklist="checklist"
-  />
+    @next="$router.push('/challenges/in-person-challenges-end')"
+  >
+    <template #after-checklist>
+      <p class="mt-4 text-sm">
+        (Wait for the instructor to go over the solution live before pressing
+        the "Complete" button below and moving to the next challenge. This way
+        you can compare your solution to the instructor's solution)
+      </p>
+    </template>
+  </CodingChallenge>
 </template>

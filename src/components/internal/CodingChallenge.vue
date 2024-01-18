@@ -107,7 +107,12 @@ function refreshIframe() {
 
   <!-- Checklist -->
   <AppModal :open="showChecklist" @close="showChecklist = false">
-    <h2 class="mb-2 text-2xl">Exercise Checklist</h2>
+    <h2
+      class="flex items-center gap-4 pb-2 mb-2 text-2xl border-b border-gray-300 dark:border-gray-800"
+    >
+      <Icon icon="fa:check" class="text-primary" />
+      Exercise Checklist
+    </h2>
     <h3 class="mb-4 text-lg">
       Double check that you've met all the requirements.
     </h3>
@@ -128,6 +133,8 @@ function refreshIframe() {
         <span>{{ item }}</span>
       </li>
     </ul>
+
+    <slot name="after-checklist"></slot>
 
     <div class="flex justify-between mt-5">
       <button @click="showChecklist = false" class="btn btn-outline">
