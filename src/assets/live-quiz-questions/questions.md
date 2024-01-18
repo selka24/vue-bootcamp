@@ -62,7 +62,111 @@ False
 
 ---
 
-Vue 3 supports TypeScript out of the box
+Which of the following correctly defines a template ref?
+
+# Correct
+
+```html
+<script setup>
+  const myRef = ref();
+</script>
+
+<template>
+  <div ref="”myRef”"></div>
+</template>
+```
+
+#
+
+```html
+<script setup>
+  const myRef = ref();
+</script>
+
+<template>
+  <div v-ref="”myRef”"></div>
+</template>
+```
+
+#
+
+```html
+<script setup>
+  const myRef = ref();
+</script>
+
+<template>
+  <div @ref="”myRef”"></div>
+</template>
+```
+
+#
+
+```html
+<script setup>
+  const myRef = ref();
+</script>
+
+<template>
+  <div :ref="”myRef”"></div>
+</template>
+```
+
+---
+
+Which of the following correctly attaches a click event listener to an element?
+
+# Correct
+
+`@click`
+
+#
+
+`onClick`
+
+#
+
+`v-event:click`
+
+#
+
+`v-on@click`
+
+---
+
+Given the following code, will the message "test" ever log to the console?
+
+```html
+<script setup>
+  import { ref, computed } from "vue";
+
+  const count = ref(0);
+  const doubled = computed({
+    get() {
+      return count.value * 2;
+    },
+    set(value) {
+      count.value = value / 2;
+      console.log("test");
+    },
+  });
+
+  count.value++;
+  doubled.value = 10;
+</script>
+```
+
+# Correct
+
+Yes
+
+#
+
+No
+
+---
+
+`true-value` and `false-value` are valid Vue-specific attributes.
 
 # Correct
 
@@ -74,49 +178,13 @@ False
 
 ---
 
-Server-side rendering (SSR) is not possible in Vue
-
-#
-
-True
-
-# Correct
-
-False
-
----
-
-Computed properties are by default getter-only
+Using v-html comes with some security risks and should be used cautiously.
 
 # Correct
 
 True
 
 #
-
-False
-
----
-
-Both globally and locally registered components must be imported before using in the template
-
-#
-
-True
-
-# Correct
-
-False
-
----
-
-Using v-html is secure and considered as a best practice
-
-#
-
-True
-
-# Correct
 
 False
 
@@ -411,29 +479,23 @@ Limiting the styles to its component
 
 ---
 
-The below syntax is valid
-
-```html
-<script setup>
-  const theme = {
-    color: "red",
-  };
-</script>
-
-<style scoped>
-  p {
-    color: v-bind("theme.color");
-  }
-</style>
-```
+When is v-show preferred over v-if?
 
 # Correct
 
-True
+When an element's visibility is toggled often
 
 #
 
-False
+There is no difference
+
+#
+
+v-if is always more performant
+
+#
+
+When an element uses transitions
 
 ---
 

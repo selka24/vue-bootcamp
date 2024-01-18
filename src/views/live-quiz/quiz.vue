@@ -7,6 +7,8 @@ import QuizTimer from "@/components/internal/QuizTimer.vue";
 import { useConfetti } from "@/composables/useConfetti";
 import type { Question, ActiveQuestion } from "@/types";
 import { useLocalStorage } from "@vueuse/core";
+import { config } from "@/assets/live-quiz-questions/config";
+
 const supabase = useSupabase();
 const { session, login } = useUser();
 
@@ -123,6 +125,13 @@ async function ranOutOfTime() {
 const rightAnswers = computed(() => {
   return answers.value.filter((x) => x.isCorrect);
 });
+
+const rightAnswersWithoutExampleQuestions = computed(() => {
+  return rightAnswers.value.filter(
+    (x) => (x.questionId || 0) > config.numberOfExampleQuestions,
+  );
+});
+
 // Reset the answers and submit status if the quiz starts over
 watch(
   () => activeQuestion.value?.status,
@@ -248,8 +257,14 @@ const unwatchQuizIdChecker = watch(
         </h2>
         <h3 class="text-3xl">
           You got
-          <strong class="text-primary">{{ rightAnswers.length }}</strong> out of
-          <strong class="text-primary">{{ questions?.length }}</strong> correct
+          <strong class="text-primary">{{
+            rightAnswersWithoutExampleQuestions.length
+          }}</strong>
+          out of
+          <strong class="text-primary">{{
+            config.numberOfRealQuestions
+          }}</strong>
+          correct
         </h3>
       </div>
     </div>
@@ -264,7 +279,12 @@ const unwatchQuizIdChecker = watch(
       />
       <QuizQuestion
         :content="currentQuestion?.content"
-        :number="currentQuestion?.id"
+        :is-example="currentQuestion.id <= config.numberOfExampleQuestions"
+        :number="
+          currentQuestion.id <= config.numberOfExampleQuestions
+            ? currentQuestion?.id
+            : currentQuestion?.id - config.numberOfExampleQuestions
+        "
         @submit="
           handleSubmit({ ...$event, questionId: activeQuestion?.question })
         "

@@ -19,6 +19,7 @@ const props = withDefaults(
     btnIcon?: string;
     value?: string | null;
     number: number;
+    isExample: boolean;
   }>(),
   {
     btnText: "Submit",
@@ -80,11 +81,16 @@ watch(
     animateMessage.value = true;
   },
 );
+
+const preventingDoubleClick = refAutoReset(false, 1000);
 </script>
 
 <template>
   <div class="relative mb-24">
-    <h1 class="text-2xl font-bold">Question # {{ number }}</h1>
+    <h1 class="text-2xl font-bold">
+      <span v-if="isExample">Example</span>
+      Question # {{ number }}
+    </h1>
     <article class="prose lg:prose-2xl">
       <vue-markdown :source="question" :options="options" />
     </article>
@@ -127,7 +133,7 @@ watch(
     </ul>
     <div class="flex items-center justify-between gap-3">
       <div
-        class="flex items-center w-1/2 gap-2 px-2 py-3 text-gray-900 bg-gray-200 rounded dark:bg-gray-500 blink"
+        class="flex items-center w-1/2 gap-2 px-2 py-3 text-gray-900 bg-gray-200 rounded dark:bg-gray-500 blink selection:bg-transparent marker:bg-transparent"
         :class="{
           invisible: !message,
           active: animateMessage,
@@ -141,11 +147,15 @@ watch(
       </div>
       <button
         class="w-1/2 btn btn-primary"
+        :class="{
+          'pointer-events-none': preventingDoubleClick,
+        }"
         @click="
           emit('submit', {
             answer: selected,
             isCorrect: selected === correctAnswer,
-          })
+          });
+          preventingDoubleClick = true;
         "
         :disabled="disabled"
       >

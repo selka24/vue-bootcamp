@@ -8,6 +8,7 @@ import { v4 as uuid } from "uuid";
 import AppModal from "@/components/internal/AppModal.vue";
 import { useUser } from "@/composables/useUser";
 import { useRouter } from "vue-router";
+import { config } from "@/assets/live-quiz-questions/config";
 
 const { isAdmin } = useUser();
 
@@ -170,7 +171,6 @@ let editKeyboardShortcutEvent: (event: KeyboardEvent) => void;
 onMounted(() => {
   editKeyboardShortcutEvent = (event) => {
     if (event.key === "e" && event.metaKey) {
-      console.log("showing edit");
       showEdit.value = true;
     }
   };
@@ -210,13 +210,18 @@ const editForm = ref({
         <!-- Quiz Question -->
         <QuizQuestion
           v-if="currentQuestion?.content"
-          :number="currentQuestion?.id"
           :content="currentQuestion?.content"
           :btn-text="buttonText"
           @submit="handleSubmit"
           :show-correct-answer="status === 'ShowingAnswer'"
           :message="message"
           :btn-icon="buttonIcon"
+          :is-example="currentQuestion.id <= config.numberOfExampleQuestions"
+          :number="
+            currentQuestion?.id <= config.numberOfExampleQuestions
+              ? currentQuestion?.id
+              : currentQuestion?.id - config.numberOfExampleQuestions
+          "
         />
       </div>
     </div>
