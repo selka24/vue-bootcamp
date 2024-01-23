@@ -42,7 +42,7 @@ const allLinks = [
   ["Live Quiz", "/live-quiz/quiz"],
   ["Feature Challenge", "/challenges/feature-challenge"],
   ["Bug Challenge", "/challenges/bug-challenge"],
-  ["Take Home Practice Exam", "/practice-exam"],
+  ["Take Home Practice Exam", "/take-home-exam"],
 ];
 
 const route = useRoute();
@@ -153,7 +153,10 @@ const prevLink = computed(() => {
       </ul>
     </div>
   </div>
-  <div class="fixed bottom-0 left-0 right-0 flex justify-between p-4 text-5xl">
+  <div
+    v-if="$route.path.startsWith('/exercises')"
+    class="fixed bottom-0 left-0 right-0 flex justify-between p-4 text-5xl"
+  >
     <RouterLink
       :to="prevLink[1]"
       :class="{ invisible: route.path === '/' }"

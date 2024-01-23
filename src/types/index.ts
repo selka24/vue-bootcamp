@@ -20,3 +20,9 @@ export interface ActiveQuestion {
   quiz_id: string;
   time_limit_seconds: number;
 }
+
+export interface McqAnswer {
+  questionId: number;
+  answer?: string | null;
+  isCorrect: boolean;
+}
