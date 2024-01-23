@@ -4,8 +4,11 @@ import hljs from "highlight.js";
 import "highlight.js/styles/vs2015.css";
 import { ref, computed, watch } from "vue";
 import { refAutoReset } from "@vueuse/core";
+import type { McqAnswer } from "@/types";
 
-const emit = defineEmits(["submit"]);
+defineEmits<{
+  submit: [payload: McqAnswer];
+}>();
 
 const props = withDefaults(
   defineProps<{
@@ -19,7 +22,7 @@ const props = withDefaults(
     btnIcon?: string;
     value?: string | null;
     number: number;
-    isExample: boolean;
+    isExample?: boolean;
   }>(),
   {
     btnText: "Submit",
@@ -135,15 +138,17 @@ const preventingDoubleClick = refAutoReset(false, 1000);
       <div
         class="flex items-center w-1/2 gap-2 px-2 py-3 text-gray-900 bg-gray-200 rounded dark:bg-gray-500 blink selection:bg-transparent marker:bg-transparent"
         :class="{
-          invisible: !message,
+          invisible: !message && !$slots.message,
           active: animateMessage,
         }"
       >
-        <Icon
-          :icon="messageIcon || 'fa:lightbulb-o'"
-          :class="messageIconClass"
-        ></Icon>
-        {{ message }}
+        <slot name="message">
+          <Icon
+            :icon="messageIcon || 'fa:lightbulb-o'"
+            :class="messageIconClass"
+          ></Icon>
+          {{ message }}
+        </slot>
       </div>
       <button
         class="w-1/2 btn btn-primary"
@@ -151,9 +156,10 @@ const preventingDoubleClick = refAutoReset(false, 1000);
           'pointer-events-none': preventingDoubleClick,
         }"
         @click="
-          emit('submit', {
+          $emit('submit', {
             answer: selected,
             isCorrect: selected === correctAnswer,
+            questionId: number,
           });
           preventingDoubleClick = true;
         "
