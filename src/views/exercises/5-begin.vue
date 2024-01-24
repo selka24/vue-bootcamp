@@ -91,4 +91,10 @@ h2 {
 .votes-pill {
   @apply bg-gray-700 p-2 rounded-full text-white text-sm ml-2 w-8 h-8 inline-block text-center leading-4;
 }
+.winning {
+  @apply border-green-600;
+}
+.losing-hard {
+  @apply border-red-600;
+}
 </style>
