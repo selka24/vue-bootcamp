@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import VueMarkdown from "vue-markdown-render";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import { refAutoReset } from "@vueuse/core";
 import AppModal from "@/components/internal/AppModal.vue";
+import { onBeforeRouteLeave } from "vue-router";
 
 const props = defineProps<{
   repo: string;
@@ -36,6 +37,36 @@ const refreshingFrame = refAutoReset(false, 20);
 function refreshIframe() {
   refreshingFrame.value = true;
 }
+
+function addReloadConfirm() {
+  window.onbeforeunload = function () {
+    return "Are you sure you want to leave?";
+  };
+}
+
+function removeReloadConfirm() {
+  window.onbeforeunload = () => {};
+}
+
+onMounted(addReloadConfirm);
+onUnmounted(removeReloadConfirm);
+
+watch(
+  () => checked.value.length,
+  () => {
+    if (checked.value.length === props.checklist.length) {
+      removeReloadConfirm();
+    } else {
+      addReloadConfirm();
+    }
+  },
+);
+
+onBeforeRouteLeave(() => {
+  if (checked.value.length === props.checklist.length) return true;
+  const answer = window.confirm("Are you sure you want to leave?");
+  if (!answer) return false;
+});
 </script>
 <template>
   <!-- Main Content -->
