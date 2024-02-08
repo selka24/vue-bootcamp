@@ -407,11 +407,11 @@ Which of the following classes is applied during the entire leaving phase when t
 
 v-leave
 
-# Correct
+#
 
 v-leave-from
 
-#
+# Correct
 
 v-leave-active
 
