@@ -22,12 +22,16 @@ const editing = ref(false);
   <div class="exercise-11">
     <div>
       <CardFlip @flip="editing = $event.flipped">
-        <UserProfileCardEdit
-          v-if="editing"
-          v-bind="user"
-          @saved="user = $event"
-        />
-        <UserProfileCardAdvanced v-else v-bind="user" />
+        <UserProfileCardEdit v-if="editing" v-bind="user" @saved="user = $event" />
+        <UserProfileCardAdvanced v-else v-bind="user">
+          <template #bio>
+            <p class="bio" v-html="user.bio">
+            </p>
+          </template>
+          <template #skill="{ data }">
+            {{ data === 'Vue' ? '🔥' : '' }} {{ data }}
+          </template>
+        </UserProfileCardAdvanced>
       </CardFlip>
       <button @click="editing = !editing" class="edit-button">
         {{ editing ? "Cancel" : "Edit" }}
@@ -40,6 +44,7 @@ const editing = ref(false);
 .exercise-11 {
   @apply flex items-center justify-center h-screen p-10;
 }
+
 .edit-button {
   @apply bg-gray-200 dark:bg-gray-700 dark:text-white px-2 py-1 rounded block mt-2 w-full max-w-xs;
 }

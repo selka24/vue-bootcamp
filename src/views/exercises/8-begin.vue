@@ -14,11 +14,15 @@ const user = ref({
   skills: ["JavaScript", "Vue", "React", "Node"],
   pro: true,
 });
+
+const handleProfileCardEdit = (payload) => {
+  user.value = payload
+}
 </script>
 <template>
   <div class="viewport-center">
     <UserProfileCard v-bind="user" class="mr-5" />
-    <UserProfileCardEdit v-bind="user" />
+    <UserProfileCardEdit v-bind="user" @submitted="handleProfileCardEdit" />
   </div>
 </template>
 

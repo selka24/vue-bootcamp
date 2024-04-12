@@ -4,6 +4,23 @@ import UserProfileCard from "@/components/end/UserProfileCard.vue";
 import UserProfileCardEdit from "@/components/end/UserProfileCardEdit.vue";
 import CardShortcuts from "@/components/internal/CardShortcuts.vue";
 
+const handleKeyboardListener = (e) => {
+  console.log(e);
+  e.preventDefault();
+  if (e.key === "Escape") {
+    editing.value = false;
+  } else if (e.ctrlKey && e.key === 'e') {
+    editing.value = true;
+  }
+}
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyboardListener)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyboardListener)
+})
+
 const user = ref({
   avatar: "https://i.pravatar.cc/150?img=6",
   username: "dudemcface",
@@ -21,11 +38,7 @@ const editing = ref(false);
 <template>
   <div class="viewport-center">
     <div>
-      <UserProfileCardEdit
-        v-if="editing"
-        v-bind="user"
-        @saved="user = $event"
-      />
+      <UserProfileCardEdit v-if="editing" v-bind="user" @saved="user = $event" />
       <UserProfileCard v-else v-bind="user" />
 
       <button @click="editing = !editing" class="edit-button">

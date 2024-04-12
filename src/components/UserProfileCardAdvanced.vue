@@ -44,22 +44,18 @@ const imageLoaded = ref(false);
     <div class="header">
       <span v-if="pro" class="badge">PRO</span>
       <div class="avatar-wrapper">
-        <img
-          :src="avatar"
-          :alt="`${name.first} ${name.last}`"
-          class="avatar"
-          @load="imageLoaded = true"
-          :class="{
-            'opacity-0': !imageLoaded,
-            'opacity-100': imageLoaded,
-          }"
-        />
+        <img :src="avatar" :alt="`${name.first} ${name.last}`" class="avatar" @load="imageLoaded = true" :class="{
+        'opacity-0': !imageLoaded,
+        'opacity-100': imageLoaded,
+      }" />
       </div>
     </div>
     <div class="body">
       <h3 class="name">{{ name.first }} {{ name.last }}</h3>
       <h4 class="username">@{{ username }}</h4>
-      <p class="bio">{{ bio }}</p>
+      <slot name="bio">
+        <p class="bio">{{ bio }}</p>
+      </slot>
       <div class="actions">
         <button class="message-btn" @click="$emit('message')">Message</button>
         <button class="follow-btn" @click="$emit('follow')">Follow</button>
@@ -67,7 +63,11 @@ const imageLoaded = ref(false);
     </div>
     <div class="footer">
       <ul class="skills">
-        <li v-for="skill in skillsInOrder" :key="skill">{{ skill }}</li>
+        <li v-for="skill in skillsInOrder" :key="skill">
+          <slot name="skill" :data="skill">
+            {{ skill }}
+          </slot>
+        </li>
       </ul>
     </div>
   </div>

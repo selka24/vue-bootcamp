@@ -10,13 +10,13 @@ const user = ref({
     first: "Dude",
     last: "McFace",
   },
-  skills: ["JavaScript", "Vue", "React", "Node"],
+  skills: ["Angular", "JavaScript", "Vue", "React", "Node"],
   pro: true,
 });
 </script>
 <template>
   <div class="exercise-7">
-    <h1>Replace this with the UserProfileCard</h1>
+    <UserProfileCard v-bind="user" />
     <!-- Use the UserProfileCard here to display the info from the user above -->
   </div>
 </template>

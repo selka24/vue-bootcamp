@@ -1,5 +1,43 @@
 <script setup>
+import { computed } from "vue";
+
 // you must define the props here to make the component display the proper content
+const props = defineProps({
+  avatar: {
+    type: String,
+    default: '/placeholder-avatar.jpg'
+  },
+  name: {
+    type: Object,
+    default: () => {
+      return {
+        first: 'John',
+        last: 'Doe'
+      }
+    }
+  },
+  username: {
+    type: String,
+    required: true
+  },
+  skills: {
+    type: Array,
+    validator(value) {
+      return value.length > 0;
+    }
+  },
+  pro: {
+    type: Boolean
+  },
+  bio: {
+    type: String
+  }
+})
+
+const sortSkills = computed(() => {
+  const cloneSkils = JSON.parse(JSON.stringify(props.skills))
+  return cloneSkils.sort((a, b) => a.localeCompare(b));
+})
 </script>
 <template>
   <div class="profile-card">
@@ -20,7 +58,7 @@
     </div>
     <div class="footer">
       <ul class="skills">
-        <li v-for="skill in skills" :key="skill">{{ skill }}</li>
+        <li v-for="skill in sortSkills" :key="skill">{{ skill }}</li>
       </ul>
     </div>
   </div>

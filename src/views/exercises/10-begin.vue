@@ -22,7 +22,7 @@ function keyboardShortcuts(e) {
     e.preventDefault();
     editing.value = false;
   }
-  if (e.key === "e" && e.metaKey) {
+  if (e.key === "e" && e.ctrlKey) {
     e.preventDefault();
     editing.value = true;
   }
@@ -39,12 +39,10 @@ onUnmounted(() => {
 <template>
   <div class="viewport-center">
     <div>
-      <UserProfileCardEdit
-        v-if="editing"
-        v-bind="user"
-        @saved="user = $event"
-      />
-      <UserProfileCard v-else v-bind="user" />
+      <Transition name="bounce">
+        <UserProfileCardEdit v-if="editing" v-bind="user" @saved="user = $event" />
+        <UserProfileCard v-else v-bind="user" />
+      </Transition>
 
       <button @click="editing = !editing" class="edit-button">
         {{ editing ? "Cancel" : "Edit" }}
@@ -56,5 +54,24 @@ onUnmounted(() => {
 <style scoped>
 .edit-button {
   @apply bg-gray-200 dark:bg-gray-700 dark:text-white px-2 py-1 rounded block mt-2 w-full max-w-xs;
+}
+
+.bounce-enter-active {
+  animation: bounce-in 0.5s;
+}
+
+.bounce-leave-active {
+  animation: bounce-in 0.5s reverse;
+  position: absolute;
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 </style>

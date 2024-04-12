@@ -1,6 +1,10 @@
 <script setup>
 import { ref } from "vue";
-
+const emit = defineEmits({
+  submitted: (userPayload) => {
+    return userPayload.username.length > 0 && userPayload.skills.length > 0;
+  }
+})
 const props = defineProps({
   avatar: {
     type: String,
@@ -37,64 +41,43 @@ const _user = ref({
   ...JSON.parse(JSON.stringify(props)),
   skills: props.skills.join(", "),
 });
+
+const handleFormSubmit = () => {
+  emit('submitted', { ...JSON.parse(JSON.stringify(_user.value)), skills: _user.value.skills.split(',') });
+}
 </script>
 
 <template>
-  <form class="profile-form">
+  <form class="profile-form" @submit.prevent="handleFormSubmit">
     <!-- Username Field -->
     <div class="form-field">
       <label for="username" class="form-label">Username</label>
-      <input
-        v-model="_user.username"
-        type="text"
-        id="username"
-        class="form-input"
-      />
+      <input v-model="_user.username" type="text" id="username" class="form-input" />
     </div>
 
     <!-- Bio Field -->
     <div class="form-field">
       <label for="bio" class="form-label">Bio</label>
-      <textarea
-        v-model="_user.bio"
-        id="bio"
-        class="form-textarea"
-        rows="3"
-      ></textarea>
+      <textarea v-model="_user.bio" id="bio" class="form-textarea" rows="3"></textarea>
     </div>
 
     <!-- Name Fields -->
     <div class="name-fields">
       <div class="form-field">
         <label for="firstName" class="form-label">First Name</label>
-        <input
-          v-model="_user.name.first"
-          type="text"
-          id="firstName"
-          class="form-input"
-        />
+        <input v-model="_user.name.first" type="text" id="firstName" class="form-input" />
       </div>
       <div class="form-field">
         <label for="lastName" class="form-label">Last Name</label>
-        <input
-          v-model="_user.name.last"
-          type="text"
-          id="lastName"
-          class="form-input"
-        />
+        <input v-model="_user.name.last" type="text" id="lastName" class="form-input" />
       </div>
     </div>
 
     <!-- Skills Field -->
     <div class="form-field">
       <label for="skills" class="form-label">Skills (comma-separated)</label>
-      <input
-        v-model="_user.skills"
-        type="text"
-        id="skills"
-        class="form-input"
-        placeholder="e.g., HTML,CSS,JavaScript"
-      />
+      <input v-model="_user.skills" type="text" id="skills" class="form-input"
+        placeholder="e.g., HTML,CSS,JavaScript" />
     </div>
 
     <!-- Pro Checkbox -->
